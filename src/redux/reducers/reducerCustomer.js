@@ -49,26 +49,26 @@ export default function reducerCustomer(state = initialState, action) {
                 isError: true
             }
 
-        // // Update Room
-        // case `${types.UPDATE_ROOM}_PENDING`:
-        //     return {
-        //         ...state,
-        //         isLoading: true
-        //     }
-        // case `${types.UPDATE_ROOM}_FULFILLED`:
-        //     let index = state.customers.findIndex( x => x.id == action.payload.data.id);
-        //     state.customers[index] = action.payload.data;
-        //     return {
-        //         ...state,
-        //         isLoading: false,
-        //         isSuccess: true
-        //     }
-        // case `${types.UPDATE_ROOM}_REJECTED`:
-        //     return {
-        //         ...state,
-        //         isLoading: false,
-        //         isError: true
-        //     }
+        // Update Room
+        case `${types.UPDATE_CUSTOMER}_PENDING`:
+            return {
+                ...state,
+                isLoading: true
+            }
+        case `${types.UPDATE_CUSTOMER}_FULFILLED`:
+            let index = state.customers.findIndex( x => x.id == action.payload.data.id);
+            state.customers[index] = action.payload.data;
+            return {
+                ...state,
+                isLoading: false,
+                isSuccess: true
+            }
+        case `${types.UPDATE_CUSTOMER}_REJECTED`:
+            return {
+                ...state,
+                isLoading: false,
+                isError: true
+            }
         default:
             return state
     }

@@ -34,6 +34,7 @@ app.group('/api/v2/', (router) => {
     // ---------- Customer ----------//
     router.get('/customers', authenticated, CustomerController.getCustomers);
     router.post('/customer', authenticated, CustomerController.addCustomer);
+    router.put('/customer/:id', authenticated, CustomerController.updateCustomer);
 
 });
 

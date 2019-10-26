@@ -22,3 +22,23 @@ exports.addCustomer = (req, res) => {
         throw e;
     });
 }
+
+exports.updateCustomer = (req, res) => {
+    Customer
+    .update(req.body, {
+        where: {id: req.params.id}
+    })
+    .then(result => {
+        const {name, identity_number, phone_number, image} = req.body;
+        res.send({
+            id: req.params.id,
+            name,
+            identity_number,
+            phone_number,
+            image
+        })
+    })
+    .catch(e => {
+        throw e;
+    })
+}

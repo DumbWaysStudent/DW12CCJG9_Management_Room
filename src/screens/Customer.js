@@ -10,9 +10,11 @@ class Customer extends Component {
     super(props);
     this.state = {
       addCustomerModalDisplay: false,
+      editCustomerModalDisplay: false,
       inputCustomerName: '',
       inputIdNum: '',
       inputPhoneNum: '',
+      editModalId: 0,
       inputImage: 'default-pic',
       signInData: null
     };
@@ -52,19 +54,57 @@ class Customer extends Component {
 
       if (this.props.localCustomers.isSuccess) {
         this.setState({
-          addCustomerModalDisplay: false
+          addCustomerModalDisplay: false,
+          inputCustomerName: '',
+          inputIdNum: '',
+          inputPhoneNum: '', 
+          inputImage: ''
         })
       }
     }
   }
 
+  editCustomer = () => {
+    const { inputCustomerName, inputIdNum, inputPhoneNum, inputImage } = this.state;
+
+    if (inputCustomerName == '' && inputIdNum == '' && inputPhoneNum == '') {
+      alert('All Field Except Photos Cannot Be Empty!');
+    } else {
+      this.props.handleUpdateCustomer({
+        data: {
+          name: this.state.inputCustomerName,
+          identity_number: this.state.inputIdNum,
+          phone_number: this.state.inputPhoneNum,
+          image: this.state.inputImage
+        },
+        id: this.state.editModalId,
+        token: this.state.signInData.token
+      });
+
+      if (this.props.localCustomers.isSuccess) {
+        this.setState({
+          editCustomerModalDisplay: false,
+          inputCustomerName: '',
+          inputIdNum: '',
+          inputPhoneNum: '', 
+          inputImage: ''
+        })
+      }
+    }
+  }
+
+  editValueSetter = (params) => {
+    params.editCustomerModalDisplay = true;
+    this.setState(params);
+  }
+
   render() {
     return (
       <View style={{ flex: 1 }}>
+        {/** Add */}
         <Modal
           visible={this.state.addCustomerModalDisplay}
-          transparent={true}
-        >
+          transparent={true}>
           <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}>
             <View style={styles.addCustomerContainer}>
               <Item>
@@ -108,13 +148,70 @@ class Customer extends Component {
             </View>
           </View>
         </Modal>
+
+        {/** Edit */}
+        <Modal
+          visible={this.state.editCustomerModalDisplay}
+          transparent={true}>
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}>
+            <View style={styles.addCustomerContainer}>
+              <Item>
+                <Text>Edit Customer</Text>
+                <Right>
+                  <Icon onPress={() => this.setState({ editCustomerModalDisplay: false })} size={20} name="times" />
+                </Right>
+              </Item>
+              <Form>
+                <Label>Name:</Label>
+                <Item>
+                  <Input
+                    value={this.state.inputCustomerName}
+                    placeholder="input the name of room"
+                    onChangeText={(text) => this.setState({ inputCustomerName: text })}
+                  />
+                </Item>
+                <Label>Identity Number:</Label>
+                <Item>
+                  <Input
+                    value={this.state.inputIdNum}
+                    placeholder="input the customer identity number"
+                    onChangeText={(text) => this.setState({ inputIdNum: text })}
+                  />
+                </Item>
+                <Label>Phone Number:</Label>
+                <Item>
+                  <Input
+                    value={this.state.inputPhoneNum}
+                    placeholder="input the customer phone number"
+                    onChangeText={(text) => this.setState({ inputPhoneNum: text })}
+                  />
+                </Item>
+                <Label>Photos:</Label>
+                <Item>
+                  <Icon name="camera" size={20} />
+                </Item>
+                <Button
+                  onPress={() => this.editCustomer()}
+                  style={{ marginTop: 79 }}>
+                  <Text style={{ textAlign: 'center', width: '100%' }}>Save</Text>
+                </Button>
+              </Form>
+            </View>
+          </View>
+        </Modal>
         <FlatList
           data={this.props.localCustomers.customers}
           style={{ width: '100%', height: 300 }}
           showsVerticalScrollIndicator={false}
           keyExtractor={item => item.id}
           renderItem={({ item }) =>
-            <Card style={{ flexDirection: 'row', width: '90%', alignSelf: 'center' }}>
+            <Card onTouchEndCapture={() => this.editValueSetter({
+              editModalId: item.id,
+              inputCustomerName: item.name,
+              inputIdNum: item.identity_number,
+              inputPhoneNum: item.phone_number,
+              inputImage: item.image
+            })} style={{ flexDirection: 'row', width: '90%', alignSelf: 'center' }}>
               <Icon name="user-circle" size={40} style={{ marginVertical: 10, marginHorizontal: 10 }} />
               <Item style={{ flexDirection: 'column' }}>
                 <Text>{item.name}</Text>
@@ -157,7 +254,8 @@ const mapDispatchToProps = dispatch => {
   return {
     // ----------- Customers ------------//
     handleGetCustomers: (params) => dispatch(actionCustomer.handleGetCustomers(params)),
-    handleAddCustomer: (params) => dispatch(actionCustomer.handleAddCustomer(params))
+    handleAddCustomer: (params) => dispatch(actionCustomer.handleAddCustomer(params)),
+    handleUpdateCustomer: (params) => dispatch(actionCustomer.handleUpdateCustomer(params))
   }
 }
 
