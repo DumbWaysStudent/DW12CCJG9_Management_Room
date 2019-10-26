@@ -1,11 +1,13 @@
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
-import StackNavigator from './StackNavigator';
+import AuthStackNavigator from './AuthStackNavigator';
+import HomeTabNavigator from './HomeTabNavigator';
 
 const RootNavigator = createSwitchNavigator({
-    StackNavigator
+    AuthStackNavigator,
+    HomeTabNavigator
 },
 {
-    initialRouteName: 'StackNavigator',
+    initialRouteName: 'AuthStackNavigator',
 })
 
 export default createAppContainer(RootNavigator);
