@@ -5,5 +5,7 @@
 // export const UPDATE_TEST_DATA = 'UPDATE_TEST_DATA';
 // export const DELETE_TEST_DATA = 'DELETE_TEST_DATA';
 
-export const AUTH_SIGN_IN = 'AUTH_SIGN_IN';
-export const AUTH_SIGN_UP = 'AUTH_SIGN_UP';
+// export const AUTH_SIGN_IN = 'AUTH_SIGN_IN';
+// export const AUTH_SIGN_UP = 'AUTH_SIGN_UP';
+
+export const GET_ROOMS = 'GET_ROOMS';

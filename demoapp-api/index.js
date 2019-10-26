@@ -9,7 +9,8 @@ app.use(bodyParser.json());
 app.use('/public', express.static('public'));
 
 //------- Controllers -------//
-const UserController = require('./controllers/user')
+const UserController = require('./controllers/user');
+const RoomController = require('./controllers/room');
 
 //------- Middleware -------//
 const {authenticated} = require('./middleware');
@@ -19,8 +20,13 @@ app.get('/', (req, res) => {
 })
 
 app.group('/api/v2/', (router) => {
+    // ---------- User ----------//
     router.post('/login', UserController.login);
     router.post('/register', UserController.register);
+
+    // ---------- Room ----------//
+    router.get('/rooms', authenticated, RoomController.getRooms);
+
 });
 
 app.listen(port, () => console.log(`Listen on Port ${port}`));
