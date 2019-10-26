@@ -12,6 +12,7 @@ app.use('/public', express.static('public'));
 const UserController = require('./controllers/user');
 const RoomController = require('./controllers/room');
 const CustomerController = require('./controllers/customer');
+const OrderController = require('./controllers/order');
 
 //------- Middleware -------//
 const {authenticated} = require('./middleware');
@@ -35,6 +36,9 @@ app.group('/api/v2/', (router) => {
     router.get('/customers', authenticated, CustomerController.getCustomers);
     router.post('/customer', authenticated, CustomerController.addCustomer);
     router.put('/customer/:id', authenticated, CustomerController.updateCustomer);
+
+    // ---------- Orders ------------//
+    router.get('/checkin', authenticated, OrderController.showCheckIn);
 
 });
 

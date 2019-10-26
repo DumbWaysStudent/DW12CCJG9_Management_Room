@@ -17,3 +17,8 @@ export const UPDATE_ROOM = 'UPDATE_ROOM';
 export const GET_CUSTOMERS = 'GET_CUSTOMERS';
 export const ADD_CUSTOMER = 'ADD_CUSTOMER';
 export const UPDATE_CUSTOMER = 'UPDATE_CUSTOMER';
+
+// Type Order
+export const GET_ORDERS = 'GET_ORDERS';
+export const CHECK_IN = 'CHECK_IN';
+export const CHECK_OUT = 'CHECK_OUT';
