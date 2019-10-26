@@ -48,6 +48,27 @@ export default function reducerRoom(state = initialState, action) {
                 isLoading: false,
                 isError: true
             }
+
+        // Update Room
+        case `${types.UPDATE_ROOM}_PENDING`:
+            return {
+                ...state,
+                isLoading: true
+            }
+        case `${types.UPDATE_ROOM}_FULFILLED`:
+            let index = state.rooms.findIndex( x => x.id == action.payload.data.id);
+            state.rooms[index] = action.payload.data;
+            return {
+                ...state,
+                isLoading: false,
+                isSuccess: true
+            }
+        case `${types.UPDATE_ROOM}_REJECTED`:
+            return {
+                ...state,
+                isLoading: false,
+                isError: true
+            }
         default:
             return state
     }

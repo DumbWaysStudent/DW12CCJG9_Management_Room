@@ -4,12 +4,16 @@ import { connect } from 'react-redux'
 import * as actionRoom from './../redux/actions/actionRoom';
 import { Card, Button, Item, Form, Input, Label, Left, Right } from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class Room extends Component {
   constructor(props) {
     super(props);
     this.state = {
       addRoomModalDisplay: false,
+      editRoomModalDisplay: false,
+      editModalValue: '',
+      editModalId: 0,
       inputRoomName: '',
       signInData: null
     };
@@ -48,6 +52,23 @@ class Room extends Component {
     }
   }
 
+  editRoomValueSetter = (params) => {
+    params.editRoomModalDisplay = true;
+    this.setState(params);
+  }
+
+  handleEditRoom = (id) => {
+    this.props.handleUpdateRoom({
+      id,
+      name: this.state.editModalValue,
+      token: this.state.signInData.token
+    });
+
+    if (this.props.localRooms.isSuccess) {
+      this.setState({ editRoomModalDisplay: false })
+    }
+  }
+
 
 
   render() {
@@ -68,7 +89,7 @@ class Room extends Component {
               <Item>
                 <Input
                   placeholder="input the name of room"
-                  onChangeText={(text) => this.setState({inputRoomName: text})}
+                  onChangeText={(text) => this.setState({ inputRoomName: text })}
                 />
               </Item>
               <Button
@@ -79,15 +100,46 @@ class Room extends Component {
             </View>
           </View>
         </Modal>
+        <Modal
+          visible={this.state.editRoomModalDisplay}
+          transparent={true}
+        >
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}>
+            <View style={styles.addRoomContainer}>
+              <Item>
+                <Text>Edit Room</Text>
+                <Right>
+                  <Icon onPress={() => this.setState({ editRoomModalDisplay: false })} size={20} name="times" />
+                </Right>
+              </Item>
+              <Item>
+                <Input
+                  value={this.state.editModalValue}
+                  onChangeText={(text) => this.setState({ editModalValue: text })}
+                />
+              </Item>
+              <Button
+                onPress={() => this.handleEditRoom(this.state.editModalId)}
+                style={{ marginTop: 79 }}>
+                <Text style={{ textAlign: 'center', width: '100%' }}>Save</Text>
+              </Button>
+            </View>
+          </View>
+        </Modal>
         <FlatList
           data={this.props.localRooms.rooms}
-          style={{ width: '100%' }}
+          style={{ width: '100%', height: 300 }}
           showsVerticalScrollIndicator={false}
           keyExtractor={item => item.id}
           renderItem={({ item }) =>
-            <Card style={{ width: 100 }}>
-              <Text>{item.name}</Text>
-            </Card>
+            <TouchableOpacity >
+              <Card onTouchEndCapture={() => this.editRoomValueSetter({
+              editModalValue: item.name,
+              editModalId: item.id
+            })} style={{ width: 100, height: 50 }}>
+                <Text>{item.name}</Text>
+              </Card>
+            </TouchableOpacity>
           }
         />
         <Button transparent onPress={() => this.setState({ addRoomModalDisplay: true })}>
@@ -122,7 +174,8 @@ const mapDispatchToProps = dispatch => {
   return {
     // ----------- TestData ------------//
     handleGetRooms: (params) => dispatch(actionRoom.handleGetRooms(params)),
-    handleAddRoom: (params) => dispatch(actionRoom.handleAddRoom(params))
+    handleAddRoom: (params) => dispatch(actionRoom.handleAddRoom(params)),
+    handleUpdateRoom: (params) => dispatch(actionRoom.handleUpdateRoom(params))
   }
 }
 

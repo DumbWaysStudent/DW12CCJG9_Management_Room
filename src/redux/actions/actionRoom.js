@@ -26,3 +26,17 @@ export const handleAddRoom = (params) => ({
         }
     })
 });
+
+export const handleUpdateRoom = (params) => ({
+    type: types.UPDATE_ROOM,
+    payload: axios({
+        method: 'put',
+        url: `${API_URL}/room/${params.id}`,
+        data: {
+            name: params.name
+        },
+        headers: {
+            Authorization: params.token
+        }
+    })
+})

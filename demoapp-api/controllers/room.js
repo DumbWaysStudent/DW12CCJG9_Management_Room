@@ -23,3 +23,16 @@ exports.addRoom = (req, res) => {
         throw e;
     });
 }
+
+exports.updateRoom = (req, res) => {
+    Room
+    .update(req.body, {
+        where: {id: req.params.id}
+    })
+    .then(result => {
+        res.send({
+            id: req.params.id,
+            name: req.body.name
+        })
+    })
+}
