@@ -39,14 +39,9 @@ class CheckIn extends Component {
           showsVerticalScrollIndicator={false}
           keyExtractor={item => item.id}
           renderItem={({ item }) =>
-            <TouchableOpacity>
-              <Card onTouchEndCapture={() => this.editRoomValueSetter({
-              editModalValue: item.name,
-              editModalId: item.id
-            })} style={(item.is_booked == false) ? {backgroudnColor: 'grey', width: 100, height:  50} : {backgroundColor: 'green', width: 100, height:  50}}>
+              <Card onTouchEndCapture={() => alert('Booked')} style={(item.is_booked == false) ? {backgroudnColor: 'grey', width: 100, height:  50} : {backgroundColor: 'green', width: 100, height:  50}}>
                 <Text>{item.name}</Text>
               </Card>
-            </TouchableOpacity>
           }
         />
       </View>
