@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { View, Text, FlatList, AsyncStorage } from 'react-native';
 import { connect } from 'react-redux'
 import * as actionRoom from './../redux/actions/actionRoom';
-import { Card } from 'native-base';
+import { Card, Button, Item } from 'native-base';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 class Room extends Component {
   constructor(props) {
@@ -31,13 +32,17 @@ class Room extends Component {
           data={this.props.localRooms.rooms}
           style={{ width: '100%' }}
           showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.id}
+          keyExtractor={ item => item.id}
           renderItem={ ({ item })=>
             <Card style={{width: 100}}>
               <Text>{item.name}</Text>
             </Card>
           }
         />
+        <Button transparent>
+          <Icon name="plus" />
+          <Text>Add Room</Text>
+        </Button>
       </View>
     );
   }
