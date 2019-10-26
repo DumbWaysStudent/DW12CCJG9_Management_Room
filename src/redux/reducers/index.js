@@ -4,12 +4,14 @@ import { createNavigationReducer } from 'react-navigation-redux-helpers';
 
 import RootNavigator from './../../navigators/RootNavigator'
 import reducerRoom from './../reducers/reducerRoom';
+import reducerCustomer from './../reducers/reducerCustomer';
 
 const reducerRouter = createNavigationReducer(RootNavigator);
 
 const appReducer = combineReducers({
   router: reducerRouter,
-  rooms: reducerRoom
+  rooms: reducerRoom,
+  customers: reducerCustomer
 })
 
 export default appReducer

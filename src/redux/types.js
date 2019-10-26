@@ -12,3 +12,8 @@
 export const GET_ROOMS = 'GET_ROOMS';
 export const ADD_ROOM = 'ADD_ROOM';
 export const UPDATE_ROOM = 'UPDATE_ROOM';
+
+// Type Customer
+export const GET_CUSTOMERS = 'GET_CUSTOMERS';
+export const ADD_CUSTOMER = 'ADD_CUSTOMER';
+export const UPDATE_CUSTOMER = 'UPDATE_CUSTOMER';

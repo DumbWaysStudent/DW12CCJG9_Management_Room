@@ -1,6 +1,5 @@
 const models = require('../models');
 const Room = models.room;
-const Order = models.order;
 
 exports.getRooms = (req, res) => {
     Room

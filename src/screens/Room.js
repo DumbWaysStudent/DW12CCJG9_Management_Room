@@ -32,7 +32,7 @@ class Room extends Component {
           });
         }
       }
-    })
+    });
   }
 
   handleAddRoom = () => {
@@ -73,7 +73,7 @@ class Room extends Component {
 
   render() {
     return (
-      <View style={{ flexDirection: 'row', backgroundColor: '#ddd' }}>
+      <View style={{ flexDirection: 'row', flex: 1 }}>
         <Modal
           visible={this.state.addRoomModalDisplay}
           transparent={true}
@@ -128,7 +128,7 @@ class Room extends Component {
         </Modal>
         <FlatList
           data={this.props.localRooms.rooms}
-          style={{ width: '100%', height: 300 }}
+          style={{ width: '100%' }}
           showsVerticalScrollIndicator={false}
           keyExtractor={item => item.id}
           renderItem={({ item }) =>
@@ -172,7 +172,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    // ----------- TestData ------------//
+    // ----------- Rooms ------------//
     handleGetRooms: (params) => dispatch(actionRoom.handleGetRooms(params)),
     handleAddRoom: (params) => dispatch(actionRoom.handleAddRoom(params)),
     handleUpdateRoom: (params) => dispatch(actionRoom.handleUpdateRoom(params))

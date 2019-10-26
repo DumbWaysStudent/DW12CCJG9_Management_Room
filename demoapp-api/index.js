@@ -11,6 +11,7 @@ app.use('/public', express.static('public'));
 //------- Controllers -------//
 const UserController = require('./controllers/user');
 const RoomController = require('./controllers/room');
+const CustomerController = require('./controllers/customer');
 
 //------- Middleware -------//
 const {authenticated} = require('./middleware');
@@ -28,6 +29,10 @@ app.group('/api/v2/', (router) => {
     router.get('/rooms', authenticated, RoomController.getRooms);
     router.post('/room', authenticated, RoomController.addRoom);
     router.put('/room/:id', authenticated, RoomController.updateRoom);
+
+
+    // ---------- Customer ----------//
+    router.get('/customers', authenticated, CustomerController.getCustomers);
 
 });
 
