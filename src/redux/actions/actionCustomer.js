@@ -13,19 +13,17 @@ export const handleGetCustomers = (params) => ({
     })
 });
 
-// export const handleAddCustomer = (params) => ({
-//     type: types.ADD_ROOM,
-//     payload: axios({
-//         method: 'post',
-//         url: `${API_URL}/room`,
-//         data: {
-//             name: params.name
-//         },
-//         headers: {
-//             Authorization: params.token
-//         }
-//     })
-// });
+export const handleAddCustomer = (params) => ({
+    type: types.ADD_CUSTOMER,
+    payload: axios({
+        method: 'post',
+        url: `${API_URL}/customer`,
+        data: params.data,
+        headers: {
+            Authorization: params.token
+        }
+    })
+});
 
 // export const handleUpdateEdit = (params) => ({
 //     type: types.UPDATE_ROOM,

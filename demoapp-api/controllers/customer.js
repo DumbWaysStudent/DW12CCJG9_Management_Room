@@ -9,5 +9,16 @@ exports.getCustomers = (req, res) => {
     })
     .catch(e => {
         throw e;
+    });
+}
+
+exports.addCustomer = (req, res) => {
+    Customer
+    .create(req.body)
+    .then(result => {
+        res.send(result);
     })
+    .catch(e => {
+        throw e;
+    });
 }

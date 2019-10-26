@@ -7,7 +7,7 @@ const initialState = {
     customers: []
 };
 
-export default function reducerRoom(state = initialState, action) {
+export default function reducerCustomer(state = initialState, action) {
     switch (action.type) {
         // GET Customers
         case `${types.GET_CUSTOMERS}_PENDING`:
@@ -29,25 +29,25 @@ export default function reducerRoom(state = initialState, action) {
                 isError: true
             }
         
-        // Add Room
-        // case `${types.ADD_ROOM}_PENDING`:
-        //     return {
-        //         ...state,
-        //         isLoading: true
-        //     }
-        // case `${types.ADD_ROOM}_FULFILLED`:
-        //     state.customers.push(action.payload.data)
-        //     return {
-        //         ...state,
-        //         isLoading: false,
-        //         isSuccess: true
-        //     }
-        // case `${types.ADD_ROOM}_REJECTED`:
-        //     return {
-        //         ...state,
-        //         isLoading: false,
-        //         isError: true
-        //     }
+        // Add Customer
+        case `${types.ADD_CUSTOMER}_PENDING`:
+            return {
+                ...state,
+                isLoading: true
+            }
+        case `${types.ADD_CUSTOMER}_FULFILLED`:
+            state.customers.push(action.payload.data)
+            return {
+                ...state,
+                isLoading: false,
+                isSuccess: true
+            }
+        case `${types.ADD_CUSTOMER}_REJECTED`:
+            return {
+                ...state,
+                isLoading: false,
+                isError: true
+            }
 
         // // Update Room
         // case `${types.UPDATE_ROOM}_PENDING`:
