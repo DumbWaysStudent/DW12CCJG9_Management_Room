@@ -11,4 +11,18 @@ export const handleGetRooms = (params) => ({
             Authorization: params.token
         }
     })
-})
+});
+
+export const handleAddRoom = (params) => ({
+    type: types.ADD_ROOM,
+    payload: axios({
+        method: 'post',
+        url: `${API_URL}/room`,
+        data: {
+            name: params.name
+        },
+        headers: {
+            Authorization: params.token
+        }
+    })
+});

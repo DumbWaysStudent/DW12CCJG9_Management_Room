@@ -26,6 +26,7 @@ app.group('/api/v2/', (router) => {
 
     // ---------- Room ----------//
     router.get('/rooms', authenticated, RoomController.getRooms);
+    router.post('/room', authenticated, RoomController.addRoom);
 
 });
 

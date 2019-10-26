@@ -28,6 +28,26 @@ export default function reducerRoom(state = initialState, action) {
                 isLoading: false,
                 isError: true
             }
+        
+        // Add Room
+        case `${types.ADD_ROOM}_PENDING`:
+            return {
+                ...state,
+                isLoading: true
+            }
+        case `${types.ADD_ROOM}_FULFILLED`:
+            state.rooms.push(action.payload.data)
+            return {
+                ...state,
+                isLoading: false,
+                isSuccess: true
+            }
+        case `${types.ADD_ROOM}_REJECTED`:
+            return {
+                ...state,
+                isLoading: false,
+                isError: true
+            }
         default:
             return state
     }

@@ -1,20 +1,27 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList, AsyncStorage } from 'react-native';
+import { View, Text, FlatList, Modal, AsyncStorage, StyleSheet } from 'react-native';
 import { connect } from 'react-redux'
 import * as actionRoom from './../redux/actions/actionRoom';
-import { Card, Button, Item } from 'native-base';
+import { Card, Button, Item, Form, Input, Label, Left, Right } from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 class Room extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      addRoomModalDisplay: false,
+      inputRoomName: '',
+      signInData: null
     };
 
     AsyncStorage.getItem('signInData', (e, result) => {
       if (!e) {
         if (result !== null) {
           result = JSON.parse(result);
+
+          this.setState({
+            signInData: result
+          });
 
           this.props.handleGetRooms({
             token: result.token
@@ -24,22 +31,66 @@ class Room extends Component {
     })
   }
 
+  handleAddRoom = () => {
+    if (this.state.inputRoomName == '') {
+      alert('Room Name Cannot Be Empty!');
+    } else {
+      this.props.handleAddRoom({
+        name: this.state.inputRoomName,
+        token: this.state.signInData.token
+      })
+
+      if (this.props.localRooms.isSuccess) {
+        this.setState({
+          addRoomModalDisplay: false
+        })
+      }
+    }
+  }
+
+
+
   render() {
-    console.log(this.props.localRooms.rooms);
     return (
-      <View style={{flexDirection: 'row', backgroundColor: '#ddd'}}>
+      <View style={{ flexDirection: 'row', backgroundColor: '#ddd' }}>
+        <Modal
+          visible={this.state.addRoomModalDisplay}
+          transparent={true}
+        >
+          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}>
+            <View style={styles.addRoomContainer}>
+              <Item>
+                <Text>Add Room</Text>
+                <Right>
+                  <Icon onPress={() => this.setState({ addRoomModalDisplay: false })} size={20} name="times" />
+                </Right>
+              </Item>
+              <Item>
+                <Input
+                  placeholder="input the name of room"
+                  onChangeText={(text) => this.setState({inputRoomName: text})}
+                />
+              </Item>
+              <Button
+                onPress={() => this.handleAddRoom()}
+                style={{ marginTop: 79 }}>
+                <Text style={{ textAlign: 'center', width: '100%' }}>Save</Text>
+              </Button>
+            </View>
+          </View>
+        </Modal>
         <FlatList
           data={this.props.localRooms.rooms}
           style={{ width: '100%' }}
           showsVerticalScrollIndicator={false}
-          keyExtractor={ item => item.id}
-          renderItem={ ({ item })=>
-            <Card style={{width: 100}}>
+          keyExtractor={item => item.id}
+          renderItem={({ item }) =>
+            <Card style={{ width: 100 }}>
               <Text>{item.name}</Text>
             </Card>
           }
         />
-        <Button transparent>
+        <Button transparent onPress={() => this.setState({ addRoomModalDisplay: true })}>
           <Icon name="plus" />
           <Text>Add Room</Text>
         </Button>
@@ -48,6 +99,18 @@ class Room extends Component {
   }
 }
 
+const styles = StyleSheet.create({
+  addRoomContainer: {
+    marginVertical: 100,
+    marginHorizontal: 35,
+    borderWidth: 2,
+    borderColor: '#444',
+    width: '80%',
+    height: 200,
+    backgroundColor: '#444',
+    borderRadius: 5
+  }
+})
 
 const mapStateToProps = state => {
   return {
@@ -59,6 +122,7 @@ const mapDispatchToProps = dispatch => {
   return {
     // ----------- TestData ------------//
     handleGetRooms: (params) => dispatch(actionRoom.handleGetRooms(params)),
+    handleAddRoom: (params) => dispatch(actionRoom.handleAddRoom(params))
   }
 }
 
