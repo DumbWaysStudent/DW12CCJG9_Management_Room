@@ -6,6 +6,7 @@ const Room = models.room;
 exports.showCheckIn = (req, res) => {
     Room.findAll({
         include: [{
+            where: {is_done: false},
             model: Order,
             as: 'roomOrder'
         }, {
