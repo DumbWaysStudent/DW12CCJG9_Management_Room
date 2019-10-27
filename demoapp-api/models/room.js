@@ -6,15 +6,14 @@ module.exports = (sequelize, DataTypes) => {
   room.associate = function(models) {
     // associations can be defined here
     room.belongsTo(models.order, {
-      as: 'roomOrders',
+      as: 'roomOrder',
       foreignKey: 'id'
     });
-    
+
     room.belongsTo(models.customer, {
-      as: 'customerOrders',
+      as: 'customerOrder',
       foreignKey: 'id'
-    });
-    
+    })
   };
   return room;
 };

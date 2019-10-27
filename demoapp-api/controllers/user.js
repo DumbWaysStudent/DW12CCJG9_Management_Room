@@ -12,37 +12,31 @@ exports.login = (req, res) => {
                 bcrypt.compare(password, user.password, (err, result) => {
                     if (err) {
                         res.send({
-                            status: 'error',
-                            message: 'Verify Error  ',
-                            err
+                            error: true,
+                            message: 'Verify Error  '
                         });
                     } else if (result) {
                         const token = jwt.sign({ userId: user.id }, 'checkinhotelonline');
                         res.send({
-                            status: 'success',
                             name: user.name,
                             token: `Bearer ${token}`
                         });
                     } else {
                         res.send({
-                            status: 'error',
+                            error: true,
                             message: 'Wrong password!'
                         });
                     }
                 });
             } else {
                 res.send({
-                    status: 'error',
+                    error: true,
                     message: `Can't find user with username ${username}`
                 })
             }
         })
         .catch(err => {
-            res.send({
-                status: 'error',
-                message: "Can't Sign In",
-                err
-            });
+            if (err) throw err;
         })
 }
 
@@ -50,12 +44,11 @@ exports.register = (req, res) => {
     bcrypt.hash(req.body.password, 10, (err, hash) => {
         if (err) {
             res.send({
-                status: 'error',
-                message: 'error while encrypted data',
-                err
+                error: true,
+                message: 'error while encrypted data'
             });
         } else if (hash) {
-            const { username, email, name, avatar } = req.body
+            const { username, password, email, name, avatar } = req.body
             User.create({
                 username,
                 password: hash,
@@ -66,16 +59,12 @@ exports.register = (req, res) => {
                 .then(user => {
                     const token = jwt.sign({ userID: user.id }, 'checkinhotelonline');
                     res.send({
-                        status: 'success',
                         name: user.name,
                         token: `Bearer ${token}`
                     });
                 })
                 .catch(err => {
-                    res.send({
-                        status: 'success',
-                        err
-                    })
+                    if (err) throw err;
                 })
         }
     })
