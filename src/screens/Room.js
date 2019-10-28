@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList, Modal, AsyncStorage, StyleSheet } from 'react-native';
+import { View, AsyncStorage } from 'react-native';
+import { Layout, Text, Input, Button, Spinner } from 'react-native-ui-kitten';
+import { Fab } from 'native-base';
 import { connect } from 'react-redux'
 import * as actionRoom from './../redux/actions/actionRoom';
-import { Card, Button, Item, Form, Input, Label, Left, Right } from 'native-base';
+import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { FlatGrid } from 'react-native-super-grid';
+import styles from './../assets/styles/main.styles'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class Room extends Component {
@@ -14,6 +18,7 @@ class Room extends Component {
       editRoomModalDisplay: false,
       editModalValue: '',
       editModalId: 0,
+      onDelete: false,
       inputRoomName: '',
       signInData: null
     };
@@ -69,100 +74,109 @@ class Room extends Component {
     }
   }
 
+  deleteRoom = (id) => {
+    this.setState({
+      editRoomModalDisplay: false,
+      onDelete: true
+    });
 
+    this.props.handleDeleteRoom({
+      id,
+      token: this.state.signInData.token
+    })
+    .then((result) => {
+      console.log(result.action.payload.status)
+      alert('Room Deleted')
+    })
+  }
 
   render() {
     return (
-      <View style={{ flexDirection: 'row', flex: 1 }}>
+      <Layout style={[styles.container, styles.containerHome]}>
         <Modal
-          visible={this.state.addRoomModalDisplay}
-          transparent={true}
-        >
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}>
-            <View style={styles.addRoomContainer}>
-              <Item>
-                <Text>Add Room</Text>
-                <Right>
-                  <Icon onPress={() => this.setState({ addRoomModalDisplay: false })} size={20} name="times" />
-                </Right>
-              </Item>
-              <Item>
-                <Input
-                  placeholder="input the name of room"
-                  onChangeText={(text) => this.setState({ inputRoomName: text })}
-                />
-              </Item>
-              <Button
-                onPress={() => this.handleAddRoom()}
-                style={{ marginTop: 79 }}>
-                <Text style={{ textAlign: 'center', width: '100%' }}>Save</Text>
-              </Button>
-            </View>
+          isVisible={this.props.localRooms.isLoading}
+          backdropOpacity={0.3}>
+          <View style={{ flex: 1 }}>
+            <Spinner />
           </View>
         </Modal>
         <Modal
-          visible={this.state.editRoomModalDisplay}
-          transparent={true}
-        >
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}>
-            <View style={styles.addRoomContainer}>
-              <Item>
-                <Text>Edit Room</Text>
-                <Right>
-                  <Icon onPress={() => this.setState({ editRoomModalDisplay: false })} size={20} name="times" />
-                </Right>
-              </Item>
-              <Item>
-                <Input
-                  value={this.state.editModalValue}
-                  onChangeText={(text) => this.setState({ editModalValue: text })}
-                />
-              </Item>
-              <Button
-                onPress={() => this.handleEditRoom(this.state.editModalId)}
-                style={{ marginTop: 79 }}>
-                <Text style={{ textAlign: 'center', width: '100%' }}>Save</Text>
-              </Button>
-            </View>
-          </View>
+          isVisible={this.state.addRoomModalDisplay}
+          onBackButtonPress={() => this.setState({ addRoomModalDisplay: false })}
+          backdropOpacity={0.3}>
+          <Layout style={[styles.modalBox, styles.roomModal]}>
+            <Text style={styles.modalBoxTitle} category="h5">Add Room</Text>
+            <Layout>
+              <Input
+                style={styles.modalInput}
+                size="small"
+                label="Room Name"
+                value={this.state.inputRoomName}
+                onChangeText={(text) => this.setState({ inputRoomName: text })}
+              />
+              <View style={styles.modalBoxBtnContainer}>
+                <Button onPress={() => this.setState({ addRoomModalDisplay: false })} style={styles.modalBoxBtn}>Cancel</Button>
+                <Button onPress={() => this.handleAddRoom()} style={styles.modalBoxBtn}>Save</Button>
+              </View>
+            </Layout>
+          </Layout>
         </Modal>
-        <FlatList
-          data={this.props.localRooms.rooms}
-          style={{ width: '100%' }}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.id}
+        <Modal
+          isVisible={this.state.editRoomModalDisplay}
+          onBackButtonPress={() => this.setState({ editRoomModalDisplay: false })}
+          backdropOpacity={0.3}>
+          <Layout style={[styles.modalBox, styles.roomModal]}>
+            <Button  onPress={() => this.deleteRoom(this.state.editModalId)} style={(this.state.onDelete ? [styles.modalTrashBtn, styles.modalTrashBtnOnPress] : styles.modalTrashBtn)}> <Icon size={15} name="trash-alt" />
+            </Button>
+            <Text style={styles.modalBoxTitle} category="h5">Edit Room</Text>
+            <Layout>
+              <Input
+                style={styles.modalInput}
+                size="small"
+                label="Room Name"
+                value={this.state.editModalValue}
+                onChangeText={(text) => this.setState({ editModalValue: text })}
+              />
+              <View style={styles.modalBoxBtnContainer}>
+                <Button onPress={() => this.setState({ editRoomModalDisplay: false })} style={styles.modalBoxBtn}>Cancel</Button>
+                <Button onPress={() => this.handleEditRoom(this.state.editModalId)} style={styles.modalBoxBtn}>Save</Button>
+              </View>
+            </Layout>
+          </Layout>
+        </Modal>
+        <FlatGrid
+          itemDimension={110}
+          items={this.props.localRooms.rooms}
           renderItem={({ item }) =>
-            <TouchableOpacity >
-              <Card onTouchEndCapture={() => this.editRoomValueSetter({
+            <View style={styles.checkinGrid} onTouchEndCapture={() => this.editRoomValueSetter({
               editModalValue: item.name,
               editModalId: item.id
-            })} style={{ width: 100, height: 50 }}>
-                <Text>{item.name}</Text>
-              </Card>
-            </TouchableOpacity>
+            })}><Text>{item.name}</Text></View>
           }
         />
-        <Button transparent onPress={() => this.setState({ addRoomModalDisplay: true })}>
-          <Icon name="plus" />
-          <Text>Add Room</Text>
-        </Button>
-      </View>
+        <Fab
+          style={{ backgroundColor: '#ffffff', position: 'relative' }}
+          position="bottomRight"
+          onPress={() => this.setState({ addRoomModalDisplay: true })}>
+          <Icon name="plus" style={{ color: '#284de0' }} />
+        </Fab>
+      </Layout>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  addRoomContainer: {
-    marginVertical: 100,
-    marginHorizontal: 35,
-    borderWidth: 2,
-    borderColor: '#444',
-    width: '80%',
-    height: 200,
-    backgroundColor: '#444',
-    borderRadius: 5
-  }
-})
+// const styles = StyleSheet.create({
+//   addRoomContainer: {
+//     marginVertical: 100,
+//     marginHorizontal: 35,
+//     borderWidth: 2,
+//     borderColor: '#444',
+//     width: '80%',
+//     height: 200,
+//     backgroundColor: '#444',
+//     borderRadius: 5
+//   }
+// })
 
 const mapStateToProps = state => {
   return {
@@ -175,7 +189,8 @@ const mapDispatchToProps = dispatch => {
     // ----------- Rooms ------------//
     handleGetRooms: (params) => dispatch(actionRoom.handleGetRooms(params)),
     handleAddRoom: (params) => dispatch(actionRoom.handleAddRoom(params)),
-    handleUpdateRoom: (params) => dispatch(actionRoom.handleUpdateRoom(params))
+    handleUpdateRoom: (params) => dispatch(actionRoom.handleUpdateRoom(params)),
+    handleDeleteRoom: (params) => dispatch(actionRoom.handleDeleteRoom(params))
   }
 }
 

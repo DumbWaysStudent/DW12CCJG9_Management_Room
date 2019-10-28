@@ -69,6 +69,27 @@ export default function reducerRoom(state = initialState, action) {
                 isLoading: false,
                 isError: true
             }
+        
+        // Delete Room
+        case `${types.DELETE_ROOM}_PENDING`:
+            return {
+                ...state,
+                isLoading: true
+            }
+        case `${types.DELETE_ROOM}_FULFILLED`:
+            let newData = state.rooms.filter(x => x.id != action.payload.data.id);
+            return {
+                ...state,
+                isLoading: false,
+                isSuccess: true,
+                rooms: newData
+            }
+        case `${types.DELETE_ROOM}_REJECTED`:
+            return {
+                ...state,
+                isLoading: false,
+                isError: true
+            }
         default:
             return state
     }

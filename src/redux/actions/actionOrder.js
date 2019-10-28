@@ -13,17 +13,17 @@ export const handleGetOrders = (params) => ({
     })
 });
 
-// export const handleAddCustomer = (params) => ({
-//     type: types.ADD_CUSTOMER,
-//     payload: axios({
-//         method: 'post',
-//         url: `${API_URL}/customer`,
-//         data: params.data,
-//         headers: {
-//             Authorization: params.token
-//         }
-//     })
-// });
+export const handleAddCheckIn = (params) => ({
+    type: types.CHECK_IN,
+    payload: axios({
+        method: 'post',
+        url: `${API_URL}/checkin`,
+        data: params.data,
+        headers: {
+            Authorization: params.token
+        }
+    })
+});
 
 // export const handleUpdateCustomer = (params) => ({
 //     type: types.UPDATE_CUSTOMER,

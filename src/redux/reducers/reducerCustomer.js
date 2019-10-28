@@ -69,6 +69,27 @@ export default function reducerCustomer(state = initialState, action) {
                 isLoading: false,
                 isError: true
             }
+
+        // Delete Customer
+        case `${types.DELETE_CUSTOMER}_PENDING`:
+            return {
+                ...state,
+                isLoading: true
+            }
+        case `${types.DELETE_CUSTOMER}_FULFILLED`:
+            let newData = state.customers.filter(x => x.id != action.payload.data.id);
+            return {
+                ...state,
+                isLoading: false,
+                isSuccess: true,
+                customers: newData
+            }
+        case `${types.DELETE_CUSTOMER}_REJECTED`:
+            return {
+                ...state,
+                isLoading: false,
+                isError: true
+            }
         default:
             return state
     }

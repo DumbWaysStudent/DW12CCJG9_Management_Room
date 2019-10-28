@@ -29,25 +29,25 @@ export default function reducerOrder(state = initialState, action) {
                 isError: true
             }
         
-        // Add Room
-        // case `${types.ADD_ROOM}_PENDING`:
-        //     return {
-        //         ...state,
-        //         isLoading: true
-        //     }
-        // case `${types.ADD_ROOM}_FULFILLED`:
-        //     state.rooms.push(action.payload.data)
-        //     return {
-        //         ...state,
-        //         isLoading: false,
-        //         isSuccess: true
-        //     }
-        // case `${types.ADD_ROOM}_REJECTED`:
-        //     return {
-        //         ...state,
-        //         isLoading: false,
-        //         isError: true
-        //     }
+        // Add CheckIn
+        case `${types.CHECK_IN}_PENDING`:
+            return {
+                ...state,
+                isLoading: true
+            }
+        case `${types.CHECK_IN}_FULFILLED`:
+            state.orders.push(action.payload.data.result)
+            return {
+                ...state,
+                isLoading: false,
+                isSuccess: true
+            }
+        case `${types.CHECK_IN}_REJECTED`:
+            return {
+                ...state,
+                isLoading: false,
+                isError: true
+            }
 
         // // Update Room
         // case `${types.UPDATE_ROOM}_PENDING`:

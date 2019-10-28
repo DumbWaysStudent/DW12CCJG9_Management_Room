@@ -40,3 +40,14 @@ export const handleUpdateRoom = (params) => ({
         }
     })
 })
+
+export const handleDeleteRoom = (params) => ({
+    type: types.DELETE_ROOM,
+    payload: axios({
+        method: 'delete',
+        url: `${API_URL}/room/${params.id}`,
+        headers: {
+            Authorization: params.token
+        }
+    })
+})

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, AsyncStorage } from 'react-native';
-import {Button} from 'native-base';
+import {Button} from 'react-native-ui-kitten';
 
 class Settings extends Component {
   constructor(props) {
@@ -25,7 +25,7 @@ class Settings extends Component {
     return (
       <View>
         <Text> Settings </Text>
-        <Button onPress={() => this.signOut()}><Text>Sign Out</Text></Button>
+        <Button onPress={() => this.signOut()}>Sign Out</Button>
       </View>
     );
   }

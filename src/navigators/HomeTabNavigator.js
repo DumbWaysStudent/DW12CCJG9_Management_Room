@@ -50,9 +50,9 @@ const HomeTabNavigator = createBottomTabNavigator({
     {
         initialRouteName: 'CheckIn',
         tabBarOptions: {
-            activeTintColor: '#ee7a33',
-            inactiveTintColor: '#965533',
-            style: { paddingVertical: 5, backgroundColor: '#383332', height: 60 },
+            activeTintColor: '#ffffff',
+            inactiveTintColor: '#a6c1ff',
+            style: { paddingVertical: 5, backgroundColor: '#284de0', height: 60 },
             labelStyle: { fontWeight: 'bold' }
         },
     }

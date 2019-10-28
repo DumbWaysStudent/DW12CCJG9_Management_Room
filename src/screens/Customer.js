@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
-import { View, FlatList, Modal, AsyncStorage, StyleSheet } from 'react-native';
-import { connect } from 'react-redux'
+import { View, AsyncStorage } from 'react-native';
 import * as actionCustomer from './../redux/actions/actionCustomer';
-import { Card, Button, Item, Form, Input, Label, Left, Right, Text, Fab } from 'native-base';
+import { Layout, Text, Input, Button, Spinner } from 'react-native-ui-kitten';
+import { Fab, Card } from 'native-base';
+import { connect } from 'react-redux'
+import * as actionRoom from './../redux/actions/actionRoom';
+import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import { FlatGrid } from 'react-native-super-grid';
+import styles from './../assets/styles/main.styles'
+import { ScrollView } from 'react-native-gesture-handler';
 
 class Customer extends Component {
   constructor(props) {
@@ -16,7 +22,8 @@ class Customer extends Component {
       inputPhoneNum: '',
       editModalId: 0,
       inputImage: 'default-pic',
-      signInData: null
+      signInData: null,
+      onDelete: false
     };
 
     AsyncStorage.getItem('signInData', (e, result) => {
@@ -57,7 +64,7 @@ class Customer extends Component {
           addCustomerModalDisplay: false,
           inputCustomerName: '',
           inputIdNum: '',
-          inputPhoneNum: '', 
+          inputPhoneNum: '',
           inputImage: ''
         })
       }
@@ -86,7 +93,7 @@ class Customer extends Component {
           editCustomerModalDisplay: false,
           inputCustomerName: '',
           inputIdNum: '',
-          inputPhoneNum: '', 
+          inputPhoneNum: '',
           inputImage: ''
         })
       }
@@ -96,153 +103,169 @@ class Customer extends Component {
   editValueSetter = (params) => {
     params.editCustomerModalDisplay = true;
     this.setState(params);
+    console.log(params)
+  }
+
+  deleteCustomer = (id) => {
+    this.setState({
+      editCustomerModalDisplay: false,
+      onDelete: true
+    });
+
+    this.props.handleDeleteCustomer({
+      id,
+      token: this.state.signInData.token
+    })
+    .then(() => {
+      alert('Customer Deleted');
+    })
   }
 
   render() {
     return (
-      <View style={{ flex: 1 }}>
-        {/** Add */}
+      <Layout style={styles.container}>
         <Modal
-          visible={this.state.addCustomerModalDisplay}
-          transparent={true}>
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}>
-            <View style={styles.addCustomerContainer}>
-              <Item>
-                <Text>Add Customer</Text>
-                <Right>
-                  <Icon onPress={() => this.setState({ addCustomerModalDisplay: false })} size={20} name="times" />
-                </Right>
-              </Item>
-              <Form>
-                <Label>Name:</Label>
-                <Item>
-                  <Input
-                    placeholder="input the name of room"
-                    onChangeText={(text) => this.setState({ inputCustomerName: text })}
-                  />
-                </Item>
-                <Label>Identity Number:</Label>
-                <Item>
-                  <Input
-                    placeholder="input the customer identity number"
-                    onChangeText={(text) => this.setState({ inputIdNum: text })}
-                  />
-                </Item>
-                <Label>Phone Number:</Label>
-                <Item>
-                  <Input
-                    placeholder="input the customer phone number"
-                    onChangeText={(text) => this.setState({ inputPhoneNum: text })}
-                  />
-                </Item>
-                <Label>Photos:</Label>
-                <Item>
-                  <Icon name="camera" size={20} />
-                </Item>
-                <Button
-                  onPress={() => this.addCustomer()}
-                  style={{ marginTop: 79 }}>
-                  <Text style={{ textAlign: 'center', width: '100%' }}>Save</Text>
-                </Button>
-              </Form>
-            </View>
+          isVisible={this.props.localCustomers.isLoading}
+          backdropOpacity={0.3}>
+          <View style={{ flex: 1 }}>
+            <Spinner />
           </View>
+        </Modal>
+        <Modal
+          isVisible={this.state.addCustomerModalDisplay}
+          onBackButtonPress={() => this.setState({ addCustomerModalDisplay: false })}
+          backdropOpacity={0.3}>
+          <Layout style={[styles.modalBox, styles.customerModal]}>
+            <Text style={styles.modalBoxTitle} category="h5">Add Customer</Text>
+            <Layout>
+              <ScrollView>
+                <Input
+                  style={styles.modalInput}
+                  size="small"
+                  label="Customer Name"
+                  value={this.state.inputCustomerName}
+                  onChangeText={(text) => this.setState({ inputCustomerName: text })}
+                />
+
+                <Input
+                  style={styles.modalInput}
+                  size="small"
+                  label="Identity Number"
+                  value={this.state.inputIdNum}
+                  onChangeText={(text) => this.setState({ inputIdNum: text })}
+                />
+
+                <Input
+                  style={styles.modalInput}
+                  size="small"
+                  label="Phone Number"
+                  value={this.state.inputPhoneNum}
+                  onChangeText={(text) => this.setState({ inputPhoneNum: text })}
+                />
+
+                <View style={{ margin: 8, flexDirection: 'row' }}>
+                  <Icon name="user-circle" size={60} />
+                  <Icon name="camera" size={20} />
+                </View>
+              </ScrollView>
+              <View style={styles.modalBoxBtnContainer}>
+                <Button onPress={() => this.setState({ addCustomerModalDisplay: false })} style={styles.modalBoxBtn}>Cancel</Button>
+                <Button onPress={() => this.addCustomer()} style={styles.modalBoxBtn}>Save</Button>
+              </View>
+            </Layout>
+          </Layout>
         </Modal>
 
-        {/** Edit */}
         <Modal
-          visible={this.state.editCustomerModalDisplay}
-          transparent={true}>
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}>
-            <View style={styles.addCustomerContainer}>
-              <Item>
-                <Text>Edit Customer</Text>
-                <Right>
-                  <Icon onPress={() => this.setState({ editCustomerModalDisplay: false })} size={20} name="times" />
-                </Right>
-              </Item>
-              <Form>
-                <Label>Name:</Label>
-                <Item>
-                  <Input
-                    value={this.state.inputCustomerName}
-                    placeholder="input the name of room"
-                    onChangeText={(text) => this.setState({ inputCustomerName: text })}
-                  />
-                </Item>
-                <Label>Identity Number:</Label>
-                <Item>
-                  <Input
-                    value={this.state.inputIdNum}
-                    placeholder="input the customer identity number"
-                    onChangeText={(text) => this.setState({ inputIdNum: text })}
-                  />
-                </Item>
-                <Label>Phone Number:</Label>
-                <Item>
-                  <Input
-                    value={this.state.inputPhoneNum}
-                    placeholder="input the customer phone number"
-                    onChangeText={(text) => this.setState({ inputPhoneNum: text })}
-                  />
-                </Item>
-                <Label>Photos:</Label>
-                <Item>
+          isVisible={this.state.editCustomerModalDisplay}
+          onBackButtonPress={() => this.setState({ editCustomerModalDisplay: false })}
+          backdropOpacity={0.3}>
+          <Layout style={[styles.modalBox, styles.customerModal]}>
+          <Button  onPress={() => this.deleteCustomer(this.state.editModalId)} style={(this.state.onDelete ? [styles.modalTrashBtn, styles.modalTrashBtnOnPress] : styles.modalTrashBtn)}> <Icon size={15} name="trash-alt" />
+            </Button>
+            <Text style={styles.modalBoxTitle} category="h5">Add Customer</Text>
+            <Layout>
+              <ScrollView>
+                <Input
+                  style={styles.modalInput}
+                  size="small"
+                  label="Customer Name"
+                  value={this.state.inputCustomerName}
+                  onChangeText={(text) => this.setState({ inputCustomerName: text })}
+                />
+
+                <Input
+                  style={styles.modalInput}
+                  size="small"
+                  label="Identity Number"
+                  value={this.state.inputIdNum}
+                  onChangeText={(text) => this.setState({ inputIdNum: text })}
+                />
+
+                <Input
+                  style={styles.modalInput}
+                  size="small"
+                  label="Phone Number"
+                  value={this.state.inputPhoneNum}
+                  onChangeText={(text) => this.setState({ inputPhoneNum: text })}
+                />
+
+                <View style={{ margin: 8, flexDirection: 'row' }}>
+                  <Icon name="user-circle" size={60} />
                   <Icon name="camera" size={20} />
-                </Item>
-                <Button
-                  onPress={() => this.editCustomer()}
-                  style={{ marginTop: 79 }}>
-                  <Text style={{ textAlign: 'center', width: '100%' }}>Save</Text>
-                </Button>
-              </Form>
-            </View>
-          </View>
+                </View>
+              </ScrollView>
+              <View style={styles.modalBoxBtnContainer}>
+                <Button onPress={() => this.setState({ editCustomerModalDisplay: false })} style={styles.modalBoxBtn}>Cancel</Button>
+                <Button onPress={() => this.editCustomer()} style={styles.modalBoxBtn}>Save</Button>
+              </View>
+            </Layout>
+          </Layout>
         </Modal>
-        <FlatList
-          data={this.props.localCustomers.customers}
-          style={{ width: '100%', height: 300 }}
-          showsVerticalScrollIndicator={false}
-          keyExtractor={item => item.id}
+        <FlatGrid
+          itemDimension={200}
+          items={this.props.localCustomers.customers}
           renderItem={({ item }) =>
-            <Card onTouchEndCapture={() => this.editValueSetter({
-              editModalId: item.id,
-              inputCustomerName: item.name,
-              inputIdNum: item.identity_number,
-              inputPhoneNum: item.phone_number,
-              inputImage: item.image
-            })} style={{ flexDirection: 'row', width: '90%', alignSelf: 'center' }}>
-              <Icon name="user-circle" size={40} style={{ marginVertical: 10, marginHorizontal: 10 }} />
-              <Item style={{ flexDirection: 'column' }}>
+            <Card
+              onTouchEndCapture={() => this.editValueSetter({
+                editModalId: item.id,
+                inputCustomerName: item.name,
+                inputIdNum: item.identity_number,
+                inputPhoneNum: item.phone_number,
+                inputImage: item.image
+              })}
+              style={[styles.checkinGrid, styles.customerCard]}>
+              <Icon name="user-circle" size={50} style={{ marginVertical: 10, marginRight: 10 }} />
+              <View>
                 <Text>{item.name}</Text>
                 <Text>{item.identity_number}</Text>
                 <Text>{item.phone_number}</Text>
-              </Item>
+              </View>
             </Card>
           }
         />
         <Fab
-          style={{ backgroundColor: '#ee7a33' }}
+          style={{ backgroundColor: '#ffffff', position: 'relative' }}
           position="bottomRight"
           onPress={() => this.setState({ addCustomerModalDisplay: true })}>
-          <Icon name="plus" />
+          <Icon name="plus" style={{ color: "#284de0" }} />
         </Fab>
-      </View>
+      </Layout>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  addCustomerContainer: {
-    marginVertical: 100,
-    marginHorizontal: 35,
-    borderWidth: 2,
-    borderColor: '#444',
-    width: '80%',
-    backgroundColor: '#444',
-    borderRadius: 5
-  }
-})
+// const styles = StyleSheet.create({
+//   addCustomerContainer: {
+//     marginVertical: 100,
+//     marginHorizontal: 35,
+//     borderWidth: 2,
+//     borderColor: '#444',
+//     width: '80%',
+//     backgroundColor: '#444',
+//     borderRadius: 5
+//   }
+// })
 
 const mapStateToProps = state => {
   return {
@@ -255,7 +278,8 @@ const mapDispatchToProps = dispatch => {
     // ----------- Customers ------------//
     handleGetCustomers: (params) => dispatch(actionCustomer.handleGetCustomers(params)),
     handleAddCustomer: (params) => dispatch(actionCustomer.handleAddCustomer(params)),
-    handleUpdateCustomer: (params) => dispatch(actionCustomer.handleUpdateCustomer(params))
+    handleUpdateCustomer: (params) => dispatch(actionCustomer.handleUpdateCustomer(params)),
+    handleDeleteCustomer: (params) => dispatch(actionCustomer.handleDeleteRoom(params))
   }
 }
 

@@ -36,3 +36,14 @@ export const handleUpdateCustomer = (params) => ({
         }
     })
 })
+
+export const handleDeleteRoom = (params) => ({
+    type: types.DELETE_CUSTOMER,
+    payload: axios({
+        method: 'delete',
+        url: `${API_URL}/customer/${params.id}`,
+        headers: {
+            Authorization: params.token
+        }
+    })
+})

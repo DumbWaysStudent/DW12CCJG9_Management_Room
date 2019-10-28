@@ -42,3 +42,17 @@ exports.updateCustomer = (req, res) => {
         throw e;
     })
 }
+
+exports.deleteCustomer = (req, res) => {
+    Customer
+    .destroy({where: {id: req.params.id}})
+    .then(result => {
+        res.send({
+            status: 'success',
+            id: req.params.id
+        });
+    })
+    .catch(e => {
+        throw e;
+    })
+}

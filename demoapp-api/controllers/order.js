@@ -1,23 +1,34 @@
 const models = require('../models');
+const moment = require('moment');
 const Order = models.order;
-const Customer = models.customer;
-const Room = models.room;
 
 exports.showCheckIn = (req, res) => {
-    Room.findAll({
-        include: [{
-            where: {is_done: false},
-            model: Order,
-            as: 'roomOrder'
-        }, {
-            model: Customer,
-            as: 'customerOrder'
-        }]
-    })
+    Order.findAll()
     .then( result => {
         res.send(result);
     })
     .catch(e => {
         throw e;
+    })
+}
+
+exports.addCheckin = (req, res) => {
+    let {room_id, customer_id, duration, is_booked, is_done, order_end_time} = req.body;
+
+    order_end_time = moment(order_end_time).add(duration, 'minute').toDate().toISOString();
+    Order
+    .create({
+        room_id,
+        customer_id,
+        duration,
+        is_booked,
+        is_done,
+        order_end_time
+    })
+    .then((result) => {
+        res.send({
+            status: 'success',
+            result
+        })
     })
 }

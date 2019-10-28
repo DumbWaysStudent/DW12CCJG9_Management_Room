@@ -30,15 +30,18 @@ app.group('/api/v2/', (router) => {
     router.get('/rooms', authenticated, RoomController.getRooms);
     router.post('/room', authenticated, RoomController.addRoom);
     router.put('/room/:id', authenticated, RoomController.updateRoom);
+    router.delete('/room/:id', authenticated, RoomController.deleteRoom);
 
 
     // ---------- Customer ----------//
     router.get('/customers', authenticated, CustomerController.getCustomers);
     router.post('/customer', authenticated, CustomerController.addCustomer);
     router.put('/customer/:id', authenticated, CustomerController.updateCustomer);
+    router.delete('/customer/:id', authenticated, CustomerController.deleteCustomer);
 
     // ---------- Orders ------------//
     router.get('/checkin', authenticated, OrderController.showCheckIn);
+    router.post('/checkin', authenticated, OrderController.addCheckin);
 
 });
 

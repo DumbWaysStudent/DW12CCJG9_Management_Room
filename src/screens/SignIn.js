@@ -1,21 +1,25 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Dimensions, AsyncStorage} from 'react-native';
-import { Container, Item, Form, Input, Label, Button, Image} from 'native-base';
+import { AsyncStorage, Modal, View} from 'react-native';
+import { Text, Input, Layout, Button, Spinner } from 'react-native-ui-kitten';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import Axios from 'axios';
 import {API_URL} from './../api_url';
+import styles from '../assets/styles/main.styles';
 
 class SignIn extends Component {
   constructor(props) {
     super(props);
     this.state = {
         inputUsername: '',
-        inputPassword: ''
+        inputPassword: '',
+        secureTextEntry: true,
+        isLoading: false
     }
   }
 
   handleSignIn = () => {
       const verify = this.verifyInput(this.state.inputUsername, this.state.inputPassword);
-      
+      this.setState({ isLoading: true});
       if (verify.verified) {
         Axios({
             method: 'post',
@@ -26,26 +30,29 @@ class SignIn extends Component {
             }
         })
         .then(result => {
-            if (result.data.error == true) {
+            if (result.data.status == 'error') {
+                this.setState({ isLoading: false});
                 alert(result.data.message);
             } else {
-                // console.log(result.data)
               AsyncStorage
               .setItem('signInData', JSON.stringify(result.data))
               .then(result => {
+                  this.setState({ isLoading: false});
                   this.props.navigation.navigate('CheckIn');
               })
               .catch(e => {
-                  console.log(e);
+                  this.setState({ isLoading: false});
                   alert('Error Async: cannot sign in');
               })
             }
         })
         .catch(e => {
+            this.setState({ isLoading: false});
             console.log(e);
             alert('Error: cannot sign in');
-        })
+        }) 
       } else {
+            this.setState({ isLoading: false});
           alert(verify.message);
       }
   }
@@ -54,7 +61,7 @@ class SignIn extends Component {
       if (username == '' && password == '') {
           return {
               verified: false,
-              message: 'password empty'
+              message: 'field is empty'
           }
       } else {
           return {
@@ -63,56 +70,69 @@ class SignIn extends Component {
       }
   }
 
+  onIconPress = () => {
+      const secureTextEntry = !this.state.secureTextEntry;
+      this.setState({ secureTextEntry })
+  }
+
+  renderIcon = () => {
+      const iconName = this.state.secureTextEntry ? 'eye-slash' : 'eye';
+      return (
+          <Icon size={19} name={iconName} />
+      );
+  }
+
   render() {
     return (
-      <Container style={styles.container}>
-          <Item style={styles.authHeader}>
-              <Text style={styles.title}>Leaf Hotel</Text>
-              <Text style={styles.subTitle}>Sign In using your account</Text>
-          </Item>
-          <Form>
-              <Label>Username:</Label>
-              <Item>
-                  <Input
-                    placeholder="input your username"
-                    onChangeText={(text) => this.setState({inputUsername: text})}
-                   />
-              </Item>
-              <Label>Password:</Label>
-              <Item>
-                  <Input
-                    secureTextEntry={true}
-                    placeholder="input your password"
-                    onChangeText={(text) => this.setState({inputPassword: text})}
-                  />
-              </Item>
-              <Button style={styles.submitBtn} onPress={() => this.handleSignIn()}><Text style={{textAlign: 'center', width: '100%'}}>Sign In</Text></Button>
-          </Form>
-      </Container>
+    <Layout level="4" style={styles.container}>
+        <Modal visible={this.state.isLoading} transparent={true}>
+            <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
+                <View style={{margin: 10}}>
+                    <Spinner />
+                </View>
+            </View>
+        </Modal>
+        <Layout style={styles.frontHeader}>
+            <Text
+                style={styles.signInAppTitle}
+                category="h4">
+                Leaf Hotel
+            </Text>
+            <Text
+                style={styles.signInAppSubtitle}
+                category="s2">
+                Sign In to your account
+            </Text>
+        </Layout>
+        <Layout level="3" style={styles.formContainer}>
+            <Input
+                style={styles.input}
+                value={this.state.inputUsername}
+                label="Username"
+                placeholder="Place your username here"
+                size="small"
+                onChangeText={(text) => this.setState({inputUsername: text})}
+            />
+            <Input
+                style={styles.input}
+                value={this.state.inputPassword}
+                label="Password"
+                placeholder="Place your Password here"
+                size="small"
+                icon={this.renderIcon}
+                onIconPress={this.onIconPress}
+                secureTextEntry={this.state.secureTextEntry}
+                onChangeText={(text) => this.setState({inputPassword: text})}
+            />
+            <Button disabled={this.state.isLoading} onPress={() => this.handleSignIn()}>Sign In {this.state.loadingIcon}</Button>
+        </Layout>
+        <Text category="c1" style={styles.ydhaaText} appearance="hint">
+            You Don't Have an Account? 
+            <Text onPress={() => this.props.navigation.navigate('SignUp')} category="c2" status="info" style={{fontWeight: 'bold'}}> Sign Up Now <Icon name="arrow-right" />  </Text>
+        </Text>
+    </Layout>
     );
   }
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-    authHeader: {
-        flexDirection: 'column',
-        margin: 5,
-    },
-    title: {
-        fontSize: 16,
-    },
-    subTitle: {
-        fontSize: 12,
-    },
-    submitBtn: {
-        width: '45%',
-        fontWeight: 'bold',
-        alignSelf: 'center'
-    }
-});
-
 
 export default SignIn;
