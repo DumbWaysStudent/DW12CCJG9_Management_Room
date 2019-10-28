@@ -9,7 +9,7 @@ const initialState = {
 
 export default function reducerOrder(state = initialState, action) {
     switch (action.type) {
-        // GET Rooms
+        // GET Orders
         case `${types.GET_ORDERS}_PENDING`:
             return {
                 ...state,
@@ -49,26 +49,26 @@ export default function reducerOrder(state = initialState, action) {
                 isError: true
             }
 
-        // // Update Room
-        // case `${types.UPDATE_ROOM}_PENDING`:
-        //     return {
-        //         ...state,
-        //         isLoading: true
-        //     }
-        // case `${types.UPDATE_ROOM}_FULFILLED`:
-        //     let index = state.rooms.findIndex( x => x.id == action.payload.data.id);
-        //     state.rooms[index] = action.payload.data;
-        //     return {
-        //         ...state,
-        //         isLoading: false,
-        //         isSuccess: true
-        //     }
-        // case `${types.UPDATE_ROOM}_REJECTED`:
-        //     return {
-        //         ...state,
-        //         isLoading: false,
-        //         isError: true
-        //     }
+        // CheckOut
+        case `${types.CHECK_OUT}_PENDING`:
+            return {
+                ...state,
+                isLoading: true
+            }
+        case `${types.CHECK_OUT}_FULFILLED`:
+            let newData = state.orders.filter(x => x.room_id != action.payload.data.room_id);
+            return {
+                ...state,
+                isLoading: false,
+                isSuccess: true,
+                orders: newData
+            }
+        case `${types.CHECK_OUT}_REJECTED`:
+            return {
+                ...state,
+                isLoading: false,
+                isError: true
+            }
         default:
             return state
     }

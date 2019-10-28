@@ -92,8 +92,14 @@ class CheckIn extends Component {
     this.setState({ addCheckInDisplay: false })
   }
 
-  onSelect = (selectedOption) => {
-    this.setState({ selectOption: selectedOption })
+  checkOut = () => {
+    this.props.handleCheckOut({
+      room_id: this.state.roomID,
+      token: this.state.signInData.token
+    })
+    .then(() => {
+      this.setState({ addCheckInDisplay: false })
+    })
   }
 
   render() {
@@ -146,10 +152,10 @@ class CheckIn extends Component {
                 label={(this.state.bookedStatus) ? 'Duration Left(minutes)' : 'Duration'}
                 value={this.state.inputDuration}
                 onChangeText={(text) => this.setState({ inputDuration: text })}
-              />
+              />  
               <View style={styles.modalBoxBtnContainer}>
                 <Button onPress={() => this.setState({ addCheckInDisplay: false })} style={styles.modalBoxBtn}>Cancel</Button>
-                <Button onPress={() => this.addCheckIn()} style={styles.modalBoxBtn}>{(this.state.bookedStatus) ? 'Check Out' : 'Check In'}</Button>
+                <Button onPress={() => (this.state.bookedStatus) ? this.checkOut() : this.addCheckIn()} style={styles.modalBoxBtn}>{(this.state.bookedStatus) ? 'Check Out' : 'Check In'}</Button>
               </View>
             </Layout>
           </Layout>
@@ -191,6 +197,7 @@ const mapDispatchToProps = dispatch => {
     // ----------- Orders ------------//
     handleGetOrders: (params) => dispatch(actionOrder.handleGetOrders(params)),
     handleAddCheckIn: (params) => dispatch(actionOrder.handleAddCheckIn(params)),
+    handleCheckOut: (params) => dispatch(actionOrder.handleCheckOut(params)),
 
     // ----------- Rooms ------------//
     handleGetRooms: (params) => dispatch(actionRoom.handleGetRooms(params)),

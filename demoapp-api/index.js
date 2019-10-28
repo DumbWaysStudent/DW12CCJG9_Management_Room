@@ -42,6 +42,7 @@ app.group('/api/v2/', (router) => {
     // ---------- Orders ------------//
     router.get('/checkin', authenticated, OrderController.showCheckIn);
     router.post('/checkin', authenticated, OrderController.addCheckin);
+    router.delete('/checkout/:room_id', authenticated, OrderController.deleteOrder);
 
 });
 

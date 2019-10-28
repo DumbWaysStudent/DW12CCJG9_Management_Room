@@ -32,3 +32,14 @@ exports.addCheckin = (req, res) => {
         })
     })
 }
+
+exports.deleteOrder = (req, res) => {
+    Order
+    .destroy({ where: {room_id: req.params.room_id}})
+    .then(() => {
+        res.send({
+            status: 'success',
+            room_id: req.params.room_id
+        })
+    })
+}

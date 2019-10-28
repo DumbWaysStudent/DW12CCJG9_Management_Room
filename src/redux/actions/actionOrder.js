@@ -25,14 +25,13 @@ export const handleAddCheckIn = (params) => ({
     })
 });
 
-// export const handleUpdateCustomer = (params) => ({
-//     type: types.UPDATE_CUSTOMER,
-//     payload: axios({
-//         method: 'put',
-//         url: `${API_URL}/customer/${params.id}`,
-//         data: params.data,
-//         headers: {
-//             Authorization: params.token
-//         }
-//     })
-// })
+export const handleCheckOut = (params) => ({
+    type: types.CHECK_OUT,
+    payload: axios({
+        method: 'delete',
+        url: `${API_URL}/checkout/${params.room_id}`,
+        headers: {
+            Authorization: params.token
+        }
+    })
+})
