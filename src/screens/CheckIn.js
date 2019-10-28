@@ -93,12 +93,10 @@ class CheckIn extends Component {
   }
 
   checkOut = () => {
+    this.setState({ addCheckInDisplay: false })
     this.props.handleCheckOut({
       room_id: this.state.roomID,
       token: this.state.signInData.token
-    })
-    .then(() => {
-      this.setState({ addCheckInDisplay: false })
     })
   }
 
@@ -108,8 +106,9 @@ class CheckIn extends Component {
       <Layout style={styles.container}>
         <Modal
           isVisible={this.props.localOrders.isLoading}
+          swipeThreshold={1}
           backdropOpacity={0.3}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, position: 'absolute', top: 220, right: 140 }}>
             <Spinner />
           </View>
         </Modal>
@@ -151,6 +150,7 @@ class CheckIn extends Component {
                 size="small"
                 label={(this.state.bookedStatus) ? 'Duration Left(minutes)' : 'Duration'}
                 value={this.state.inputDuration}
+                disabled={this.state.bookedStatus}
                 onChangeText={(text) => this.setState({ inputDuration: text })}
               />  
               <View style={styles.modalBoxBtnContainer}>
