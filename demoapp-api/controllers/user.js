@@ -20,7 +20,11 @@ exports.login = (req, res) => {
                         const token = jwt.sign({ userId: user.id }, 'checkinhotelonline');
                         res.send({
                             status: 'success',
+                            id: user.id,
                             name: user.name,
+                            username: user.username,
+                            email: user.email,
+                            avatar: user.avatar,
                             token: `Bearer ${token}`
                         });
                     } else {
@@ -67,16 +71,39 @@ exports.register = (req, res) => {
                     const token = jwt.sign({ userID: user.id }, 'checkinhotelonline');
                     res.send({
                         status: 'success',
-                        name: user.name,
+                        id: user.id,
+                        username,
+                        email,
+                        name,
+                        avatar,
                         token: `Bearer ${token}`
                     });
                 })
                 .catch(err => {
                     res.send({
-                        status: 'success',
+                        status: 'error',
                         err
                     })
                 })
         }
+    })
+}
+
+exports.getProfile = (req, res) => {
+    User
+    .findOne(
+        {where: {id: req.params.id}, attributes: ['name', 'email', 'avatar']}
+    )
+    .then((result) => {
+        res.send({
+            status: 'succes',
+            result
+        })
+    })
+    .catch(err => {
+        res.send({
+            status: 'error',
+            err
+        })
     })
 }

@@ -4,11 +4,10 @@ import * as actionCustomer from './../redux/actions/actionCustomer';
 import { Layout, Text, Input, Button, Spinner } from 'react-native-ui-kitten';
 import { Fab, Card } from 'native-base';
 import { connect } from 'react-redux'
-import * as actionRoom from './../redux/actions/actionRoom';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { FlatGrid } from 'react-native-super-grid';
-import styles from './../assets/styles/main.styles'
+import styles from './../assets/styles/main.styles';
 import { ScrollView } from 'react-native-gesture-handler';
 
 class Customer extends Component {
@@ -127,7 +126,7 @@ class Customer extends Component {
         <Modal
           isVisible={this.props.localCustomers.isLoading}
           backdropOpacity={0.3}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, position: 'absolute', top: 220, right: 140 }}>
             <Spinner />
           </View>
         </Modal>

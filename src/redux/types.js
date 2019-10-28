@@ -25,3 +25,6 @@ export const DELETE_CUSTOMER = 'DELETE_CUSTOMER';
 export const GET_ORDERS = 'GET_ORDERS';
 export const CHECK_IN = 'CHECK_IN';
 export const CHECK_OUT = 'CHECK_OUT';
+
+// Type Settings
+export const GET_PROFILE = 'GET_PROFILE';

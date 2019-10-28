@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, AsyncStorage } from 'react-native';
+import { View, AsyncStorage } from 'react-native';
+import { Layout, Spinner, Text } from 'react-native-ui-kitten';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import SpinIcon from '../components/SpinIcon';
+import styles from './../assets/styles/main.styles';
 
 class Splash extends Component {
   constructor(props) {
@@ -50,19 +51,37 @@ class Splash extends Component {
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: '#444', alignItems: 'center' }}>
-        <View style={{ marginVertical: 250 }}>
-          {/* <Image style={{width: 150, height: 150}} source={require('../assets/images/logo/smokeLogo.png')} /> */}
-          <Text style={{ color: '#fff', textAlign: 'center', marginTop: 15, fontFamily: 'KOMIKASL', fontSize: 16 }}>LEAF HOTEL</Text>
+      // <View style={{ flex: 1, backgroundColor: '#444', alignItems: 'center' }}>
+      //   <View style={{ marginVertical: 250 }}>
+      //     {/* <Image style={{width: 150, height: 150}} source={require('../assets/images/logo/smokeLogo.png')} /> */}
+      //     <Text style={{ color: '#fff', textAlign: 'center', marginTop: 15, fontFamily: 'KOMIKASL', fontSize: 16 }}>LEAF HOTEL</Text>
+      //   </View>
+      //   <View style={{ position: 'absolute', top: 450 }}>
+      //     <SpinIcon>
+      //       <Icon name="spinner" size={23} style={{ color: "#fff", alignSelf: 'center' }} />
+      //     </SpinIcon>
+      //   </View>
+      //   <Text>Loading....</Text>
+        // {this.verifyToken()}
+      // </View>
+      <Layout style={styles.container}>
+        <View style={{alignItems: 'center', marginVertical: 200}}>
+          <Layout style={[styles.frontHeader, styles.ssHeader]}>
+            <Text
+              style={styles.signInAppTitle}
+              category="h1">
+              Leaf Hotel
+            </Text>
+            <Text
+                style={styles.signInAppSubtitle}
+                category="c1">
+                The Best Choice For You
+            </Text>
+          </Layout>
+          <Spinner />
+          {this.verifyToken()} 
         </View>
-        <View style={{ position: 'absolute', top: 450 }}>
-          <SpinIcon>
-            <Icon name="spinner" size={23} style={{ color: "#fff", alignSelf: 'center' }} />
-          </SpinIcon>
-        </View>
-        <Text>Loading....</Text>
-        {this.verifyToken()}
-      </View>
+      </Layout>
     );
   }
 }

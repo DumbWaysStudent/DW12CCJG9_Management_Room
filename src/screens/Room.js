@@ -96,7 +96,7 @@ class Room extends Component {
         <Modal
           isVisible={this.props.localRooms.isLoading}
           backdropOpacity={0.3}>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, position: 'absolute', top: 220, right: 140 }}>
             <Spinner />
           </View>
         </Modal>

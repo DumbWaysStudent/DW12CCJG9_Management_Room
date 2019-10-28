@@ -12,6 +12,9 @@ export default StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0)',
         marginTop: 40
     },
+    ssHeader: {
+        marginBottom: 12
+    },
     absolute: {
         position: 'absolute'
     },
@@ -117,5 +120,17 @@ export default StyleSheet.create({
     },
     customerModal: {
         height: 500
+    },
+
+    // Settings
+    profileTextContainer: {
+        marginVertical: 12,
+        marginHorizontal: 10
+    },
+    profileEmail: {
+        fontWeight: 'bold'
+    },
+    profileItem: {
+        marginTop: 15
     }
 });

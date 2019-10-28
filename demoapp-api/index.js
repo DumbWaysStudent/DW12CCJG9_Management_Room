@@ -25,6 +25,7 @@ app.group('/api/v2/', (router) => {
     // ---------- User ----------//
     router.post('/login', UserController.login);
     router.post('/register', UserController.register);
+    router.get('/profile/:id', authenticated, UserController.getProfile);
 
     // ---------- Room ----------//
     router.get('/rooms', authenticated, RoomController.getRooms);
