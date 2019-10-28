@@ -85,17 +85,16 @@ class Customer extends Component {
         },
         id: this.state.editModalId,
         token: this.state.signInData.token
-      });
-
-      if (this.props.localCustomers.isSuccess) {
-        this.setState({
-          editCustomerModalDisplay: false,
-          inputCustomerName: '',
-          inputIdNum: '',
-          inputPhoneNum: '',
-          inputImage: ''
+      })
+        .then(() => {
+          this.setState({
+            editCustomerModalDisplay: false,
+            inputCustomerName: '',
+            inputIdNum: '',
+            inputPhoneNum: '',
+            inputImage: ''
+          })
         })
-      }
     }
   }
 
@@ -115,9 +114,9 @@ class Customer extends Component {
       id,
       token: this.state.signInData.token
     })
-    .then(() => {
-      alert('Customer Deleted');
-    })
+      .then(() => {
+        alert('Customer Deleted');
+      })
   }
 
   render() {
@@ -132,7 +131,13 @@ class Customer extends Component {
         </Modal>
         <Modal
           isVisible={this.state.addCustomerModalDisplay}
-          onBackButtonPress={() => this.setState({ addCustomerModalDisplay: false })}
+          onBackButtonPress={() => this.setState({
+            addCustomerModalDisplay: false,
+            inputCustomerName: '',
+            inputIdNum: '',
+            inputPhoneNum: '',
+            inputImage: ''
+          })}
           backdropOpacity={0.3}>
           <Layout style={[styles.modalBox, styles.customerModal]}>
             <Text style={styles.modalBoxTitle} category="h5">Add Customer</Text>
@@ -168,7 +173,13 @@ class Customer extends Component {
                 </View>
               </ScrollView>
               <View style={styles.modalBoxBtnContainer}>
-                <Button onPress={() => this.setState({ addCustomerModalDisplay: false })} style={styles.modalBoxBtn}>Cancel</Button>
+                <Button onPress={() => this.setState({
+                  addCustomerModalDisplay: false,
+                  inputCustomerName: '',
+                  inputIdNum: '',
+                  inputPhoneNum: '',
+                  inputImage: ''
+                })} style={styles.modalBoxBtn}>Cancel</Button>
                 <Button onPress={() => this.addCustomer()} style={styles.modalBoxBtn}>Save</Button>
               </View>
             </Layout>
@@ -177,10 +188,16 @@ class Customer extends Component {
 
         <Modal
           isVisible={this.state.editCustomerModalDisplay}
-          onBackButtonPress={() => this.setState({ editCustomerModalDisplay: false })}
+          onBackButtonPress={() => this.setState({
+            editCustomerModalDisplay: false,
+            inputCustomerName: '',
+            inputIdNum: '',
+            inputPhoneNum: '',
+            inputImage: ''
+          })}
           backdropOpacity={0.3}>
           <Layout style={[styles.modalBox, styles.customerModal]}>
-          <Button  onPress={() => this.deleteCustomer(this.state.editModalId)} style={(this.state.onDelete ? [styles.modalTrashBtn, styles.modalTrashBtnOnPress] : styles.modalTrashBtn)}> <Icon size={15} name="trash-alt" />
+            <Button onPress={() => this.deleteCustomer(this.state.editModalId)} style={(this.state.onDelete ? [styles.modalTrashBtn, styles.modalTrashBtnOnPress] : styles.modalTrashBtn)}> <Icon size={15} name="trash-alt" />
             </Button>
             <Text style={styles.modalBoxTitle} category="h5">Add Customer</Text>
             <Layout>
@@ -215,7 +232,13 @@ class Customer extends Component {
                 </View>
               </ScrollView>
               <View style={styles.modalBoxBtnContainer}>
-                <Button onPress={() => this.setState({ editCustomerModalDisplay: false })} style={styles.modalBoxBtn}>Cancel</Button>
+                <Button onPress={() => this.setState({
+                  editCustomerModalDisplay: false,
+                  inputCustomerName: '',
+                  inputIdNum: '',
+                  inputPhoneNum: '',
+                  inputImage: ''
+                })} style={styles.modalBoxBtn}>Cancel</Button>
                 <Button onPress={() => this.editCustomer()} style={styles.modalBoxBtn}>Save</Button>
               </View>
             </Layout>

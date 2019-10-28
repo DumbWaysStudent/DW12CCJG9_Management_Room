@@ -36,7 +36,11 @@ export default function reducerRoom(state = initialState, action) {
                 isLoading: true
             }
         case `${types.ADD_ROOM}_FULFILLED`:
-            state.rooms.push(action.payload.data)
+            if (action.payload.data.status == 'error') {
+                alert(action.payload.data.message);
+            } else {
+                state.rooms.push(action.payload.data)
+            }
             return {
                 ...state,
                 isLoading: false,

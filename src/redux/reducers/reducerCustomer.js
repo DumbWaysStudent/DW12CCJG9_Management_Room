@@ -28,7 +28,7 @@ export default function reducerCustomer(state = initialState, action) {
                 isLoading: false,
                 isError: true
             }
-        
+
         // Add Customer
         case `${types.ADD_CUSTOMER}_PENDING`:
             return {
@@ -36,7 +36,11 @@ export default function reducerCustomer(state = initialState, action) {
                 isLoading: true
             }
         case `${types.ADD_CUSTOMER}_FULFILLED`:
-            state.customers.push(action.payload.data)
+            if (action.payload.data.status == 'error') {
+                alert(action.payload.data.message);
+            } else {
+                state.customers.push(action.payload.data);
+            }
             return {
                 ...state,
                 isLoading: false,
@@ -56,7 +60,7 @@ export default function reducerCustomer(state = initialState, action) {
                 isLoading: true
             }
         case `${types.UPDATE_CUSTOMER}_FULFILLED`:
-            let index = state.customers.findIndex( x => x.id == action.payload.data.id);
+            let index = state.customers.findIndex(x => x.id == action.payload.data.id);
             state.customers[index] = action.payload.data;
             return {
                 ...state,
