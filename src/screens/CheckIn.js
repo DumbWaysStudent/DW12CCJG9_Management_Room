@@ -122,15 +122,14 @@ class CheckIn extends Component {
       let matches = null;
 
       timeLeft = moment(new Date(order_end_time)).fromNow();
-      matches = moment(new Date(order_end_time)).fromNow().match(/(\d+)/g);
+      matches =  (new Date(order_end_time)).fromNow().match(/(\d+)/g);
 
       if (matches !== null && timeLeft.search('ago') === -1) {
         timeLeft = matches[0];
       } else {
         timeLeft = '0';
       }
-      // console.log(timeLeft);
-
+      
       if (timeLeft == '0') {
         clearInterval(this.state.interval);
         let id = this.props.localOrders.orders[0].id;
@@ -168,7 +167,7 @@ class CheckIn extends Component {
           duration: inputDuration,
           is_booked: true,
           is_done: false,
-          order_end_time: moment(new Date(Date.now()).toISOString()).add((Number.parseInt(inputDuration) + 1), 'minute').toDate().toISOString()
+          order_end_time: moment(new Date(Date.now())).add((Number.parseInt(inputDuration) + 1), 'minute').toDate().toISOString()
         },
         token: this.state.signInData.token
       })
