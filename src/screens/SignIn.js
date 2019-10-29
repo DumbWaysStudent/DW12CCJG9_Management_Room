@@ -67,9 +67,9 @@ class SignIn extends Component {
             this.setState({ isLoading: false});
             Toast.show({
                 text: verify.message,
-                textStyle: {textAlign: 'center'},
+                textStyle: { fontSize: 12, fontWeight: 'bold' },
                 duration: 1000,
-                style: {backgroundColor: '#ff3333', margin: 5, borderRadius: 5, width: '50%', alignSelf: 'center'}
+                style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
             });
       }
   }

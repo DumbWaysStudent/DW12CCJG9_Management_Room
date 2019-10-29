@@ -18,7 +18,8 @@ exports.showCheckIn = (req, res) => {
 
 exports.addCheckin = (req, res) => {
     let { room_id, customer_id, duration, is_booked, is_done, order_end_time } = req.body;
-    
+
+    order_end_time = moment(order_end_time).add((Number.parseInt(duration) + 1), 'minute').toDate().toISOString();
     Order
         .create({
             room_id,

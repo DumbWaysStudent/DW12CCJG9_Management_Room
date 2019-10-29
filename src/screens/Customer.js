@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, AsyncStorage } from 'react-native';
 import * as actionCustomer from './../redux/actions/actionCustomer';
 import { Layout, Text, Input, Button, Spinner } from 'react-native-ui-kitten';
-import { Fab, Card } from 'native-base';
+import { Fab, Card, Toast } from 'native-base';
 import { connect } from 'react-redux'
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -37,6 +37,18 @@ class Customer extends Component {
           this.props.handleGetCustomers({
             token: result.token
           })
+          .then(() => {
+            if (this.props.localCustomers.customers.hasOwnProperty('status')) {
+              if (this.props.localCustomers.customers.status == 'error') {
+                Toast.show({
+                  text: "Error: Can't Load Data, please check your internet connection and try again",
+                  textStyle: { fontSize: 12, fontWeight: 'bold' },
+                  duration: 2000,
+                  style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+                });
+              }
+            }
+          })
         }
       }
     });
@@ -46,7 +58,12 @@ class Customer extends Component {
     const { inputCustomerName, inputIdNum, inputPhoneNum, inputImage } = this.state;
 
     if (inputCustomerName == '' && inputIdNum == '' && inputPhoneNum == '') {
-      alert('All Field Except Photos Cannot Be Empty!');
+      Toast.show({
+        text: "Error: All Field Except Photos Cannot Be Empty!",
+        textStyle: { fontSize: 12, fontWeight: 'bold' },
+        duration: 2000,
+        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+      });
     } else {
       this.props.handleAddCustomer({
         data: {
@@ -56,9 +73,8 @@ class Customer extends Component {
           image: this.state.inputImage
         },
         token: this.state.signInData.token
-      });
-
-      if (this.props.localCustomers.isSuccess) {
+      })
+      .then(() => {
         this.setState({
           addCustomerModalDisplay: false,
           inputCustomerName: '',
@@ -66,7 +82,7 @@ class Customer extends Component {
           inputPhoneNum: '',
           inputImage: ''
         })
-      }
+      })
     }
   }
 
@@ -74,7 +90,12 @@ class Customer extends Component {
     const { inputCustomerName, inputIdNum, inputPhoneNum, inputImage } = this.state;
 
     if (inputCustomerName == '' && inputIdNum == '' && inputPhoneNum == '') {
-      alert('All Field Except Photos Cannot Be Empty!');
+      Toast.show({
+        text: "Error: All Field Except Photos Cannot Be Empty!",
+        textStyle: { fontSize: 12, fontWeight: 'bold' },
+        duration: 2000,
+        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+      });
     } else {
       this.props.handleUpdateCustomer({
         data: {
@@ -86,22 +107,21 @@ class Customer extends Component {
         id: this.state.editModalId,
         token: this.state.signInData.token
       })
-        .then(() => {
-          this.setState({
-            editCustomerModalDisplay: false,
-            inputCustomerName: '',
-            inputIdNum: '',
-            inputPhoneNum: '',
-            inputImage: ''
-          })
+      .then(() => {
+        this.setState({
+          addCustomerModalDisplay: false,
+          inputCustomerName: '',
+          inputIdNum: '',
+          inputPhoneNum: '',
+          inputImage: ''
         })
+      })
     }
   }
 
   editValueSetter = (params) => {
     params.editCustomerModalDisplay = true;
     this.setState(params);
-    console.log(params)
   }
 
   deleteCustomer = (id) => {
@@ -115,7 +135,20 @@ class Customer extends Component {
       token: this.state.signInData.token
     })
       .then(() => {
-        alert('Customer Deleted');
+        Toast.show({
+          text: `Success: Customer Deleted`,
+          textStyle: { fontSize: 12, fontWeight: 'bold' },
+          duration: 2000,
+          style: { backgroundColor: '#00cc00', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+        });
+
+        this.setState({
+          addCustomerModalDisplay: false,
+          inputCustomerName: '',
+          inputIdNum: '',
+          inputPhoneNum: '',
+          inputImage: ''
+        });
       })
   }
 

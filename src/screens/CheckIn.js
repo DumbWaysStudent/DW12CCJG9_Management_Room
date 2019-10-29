@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, AsyncStorage, Picker, Alert } from 'react-native';
 import { Layout, Text, Input, Button, Spinner } from 'react-native-ui-kitten';
+import { Toast } from 'native-base';
 import { connect } from 'react-redux'
 import * as actionOrder from './../redux/actions/actionOrder';
 import * as actionRoom from './../redux/actions/actionRoom';
@@ -60,16 +61,72 @@ class CheckIn extends Component {
                     .then(() => {
                       if (this.props.localOrders.isSuccess) {
                         // this.setCheckOutTimerData();
-                        this.setState({
-                          interval: setInterval(this.setCheckOutTimer, 60000),
-                          signInData: result,
-                          customerPicker: (this.props.localCustomers.customers != false) ? this.props.localCustomers.customers[0].id : null
-                        })
+                        if (this.props.localOrders.orders.hasOwnProperty('status')) {
+                          if (this.props.localOrders.orders.status == 'error') {
+                            Toast.show({
+                              text: "Error: Can't load data, please check your internet connection and try again.",
+                              textStyle: { fontSize: 12, fontWeight: 'bold' },
+                              duration: 2000,
+                              style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+                            });
+                          }
+                        } else {
+                          this.setState({
+                            interval: setInterval(this.setCheckOutTimer, 1000),
+                            signInData: result,
+                            customerPicker: (this.props.localCustomers.customers != false) ? this.props.localCustomers.customers[0].id : null
+                          })
+                        }
+                      } else {
+                        Toast.show({
+                          text: "Error: Can't load data, please check your internet connection and try again.",
+                          textStyle: { fontSize: 12, fontWeight: 'bold' },
+                          duration: 2000,
+                          style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+                        });
                       }
                     })
+                    .catch(() => {
+                      Toast.show({
+                        text: "Error: Can't load data, please check your internet connection and try again.",
+                        textStyle: { fontSize: 12, fontWeight: 'bold' },
+                        duration: 2000,
+                        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+                      });
+                    })
+                })
+                .catch(() => {
+                  Toast.show({
+                    text: "Error: Can't load data, please check your internet connection and try again.",
+                    textStyle: { fontSize: 12, fontWeight: 'bold' },
+                    duration: 2000,
+                    style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+                  });
                 })
             })
+            .catch(() => {
+              Toast.show({
+                text: "Error: Can't load data, please check your internet connection and try again.",
+                textStyle: { fontSize: 12, fontWeight: 'bold' },
+                duration: 2000,
+                style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+              });
+            })
+        } else {
+          Toast.show({
+            text: "Error: Can't load data, please check your internet connection and try again.",
+            textStyle: { fontSize: 12, fontWeight: 'bold' },
+            duration: 2000,
+            style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+          });
         }
+      } else {
+        Toast.show({
+          text: "Error: Can't load data, please check your internet connection and try again.",
+          textStyle: { fontSize: 12, fontWeight: 'bold' },
+          duration: 2000,
+          style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+        });
       }
     });
   }
@@ -122,14 +179,15 @@ class CheckIn extends Component {
       let matches = null;
 
       timeLeft = moment(new Date(order_end_time)).fromNow();
-      matches =  (new Date(order_end_time)).fromNow().match(/(\d+)/g);
+      matches = moment(new Date(order_end_time)).fromNow().match(/(\d+)/g);
 
       if (matches !== null && timeLeft.search('ago') === -1) {
         timeLeft = matches[0];
       } else {
         timeLeft = '0';
       }
-      
+      // console.log(timeLeft);
+
       if (timeLeft == '0') {
         clearInterval(this.state.interval);
         let id = this.props.localOrders.orders[0].id;
@@ -159,7 +217,7 @@ class CheckIn extends Component {
 
   addCheckIn = () => {
     const { roomID, inputDuration, customerPicker } = this.state;
-    if (roomID !== null && inputDuration !== '0' && customerPicker !== null) {
+    if (roomID !== null && inputDuration !== '0' && customerPicker != null) {
       this.props.handleAddCheckIn({
         data: {
           room_id: roomID,
@@ -167,14 +225,36 @@ class CheckIn extends Component {
           duration: inputDuration,
           is_booked: true,
           is_done: false,
-          order_end_time: moment(new Date(Date.now())).add((Number.parseInt(inputDuration) + 1), 'minute').toDate().toISOString()
+          order_end_time: new Date(Date.now()).toISOString()
         },
         token: this.state.signInData.token
       })
+        .then(() => {
+          if (this.props.localOrders.orders.status == 'error') {
+            Toast.show({
+              text: 'Error: Add Check In Failed',
+              textStyle: { fontSize: 12, fontWeight: 'bold' },
+              duration: 2000,
+              style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+            });
+          }
+          this.setState({
+            addCheckInDisplay: false,
+            inputRoomName: '',
+            inputDuration: '0',
+            roomID: null,
+            durationLeft: '0',
+            bookedStatus: false
+          })
+        })
     } else {
-      alert('duration cannot be empty')
+      Toast.show({
+        text: 'Error: customer not found and duration cannot be empty',
+        textStyle: { fontSize: 12, fontWeight: 'bold' },
+        duration: 2000,
+        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+      });
     }
-    this.setState({ addCheckInDisplay: false })
   }
 
   checkOut = () => {
@@ -183,11 +263,20 @@ class CheckIn extends Component {
       room_id: this.state.roomID,
       token: this.state.signInData.token
     })
-    .then(() => {
-      this.setState({
-        interval: setInterval(this.setCheckOutTimer, 60000)
+      .then(() => {
+        if (this.props.localOrders.orders.status == 'error') {
+          Toast.show({
+            text: "Error: Can't Checkout",
+            textStyle: { fontSize: 12, fontWeight: 'bold' },
+            duration: 2000,
+            style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+          });
+        } else {
+          this.setState({
+            interval: setInterval(this.setCheckOutTimer, 1000)
+          })
+        }
       })
-    })
   }
 
   durationSetter = (data, dataToCompare) => {
@@ -274,7 +363,18 @@ class CheckIn extends Component {
                 onChangeText={(text) => this.setState({ inputDuration: text })}
               />
               <View style={styles.modalBoxBtnContainer}>
-                <Button onPress={() => this.setState({ addCheckInDisplay: false })} style={styles.modalBoxBtn}>Cancel</Button>
+                <Button onPress={() => {
+                  if (this.state.bookedStatus) {
+                    this.setState({
+                      addCheckInDisplay: false,
+                      interval: setInterval(this.setCheckOutTimer, 1000)
+                    })
+                  } else {
+                    this.setState({
+                      addCheckInDisplay: false,
+                    });
+                  }
+                }} style={styles.modalBoxBtn}>Cancel</Button>
                 <Button onPress={() => (this.state.bookedStatus) ? this.checkOut() : this.addCheckIn()} style={styles.modalBoxBtn}>{(this.state.bookedStatus) ? 'Check Out' : 'Check In'}</Button>
               </View>
             </Layout>

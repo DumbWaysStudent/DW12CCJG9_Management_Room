@@ -1,4 +1,5 @@
 import * as types from './../types'
+import { Toast } from 'native-base';
 
 const initialState = {
     isLoading: false,
@@ -37,7 +38,12 @@ export default function reducerCustomer(state = initialState, action) {
             }
         case `${types.ADD_CUSTOMER}_FULFILLED`:
             if (action.payload.data.status == 'error') {
-                alert(action.payload.data.message);
+                Toast.show({
+                    text: `Error: ${action.payload.data.message}`,
+                    textStyle: { fontSize: 12, fontWeight: 'bold' },
+                    duration: 2000,
+                    style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+                  });
             } else {
                 state.customers.push(action.payload.data);
             }

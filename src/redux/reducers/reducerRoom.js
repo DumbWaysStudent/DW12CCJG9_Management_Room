@@ -1,4 +1,5 @@
-import * as types from './../types'
+import * as types from './../types';
+import { Toast } from 'native-base';
 
 const initialState = {
     isLoading: false,
@@ -28,7 +29,7 @@ export default function reducerRoom(state = initialState, action) {
                 isLoading: false,
                 isError: true
             }
-        
+
         // Add Room
         case `${types.ADD_ROOM}_PENDING`:
             return {
@@ -37,7 +38,12 @@ export default function reducerRoom(state = initialState, action) {
             }
         case `${types.ADD_ROOM}_FULFILLED`:
             if (action.payload.data.status == 'error') {
-                alert(action.payload.data.message);
+                Toast.show({
+                    text: `Error: ${action.payload.data.message}`,
+                    textStyle: { fontSize: 12, fontWeight: 'bold' },
+                    duration: 2000,
+                    style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+                });
             } else {
                 state.rooms.push(action.payload.data)
             }
@@ -60,7 +66,7 @@ export default function reducerRoom(state = initialState, action) {
                 isLoading: true
             }
         case `${types.UPDATE_ROOM}_FULFILLED`:
-            let index = state.rooms.findIndex( x => x.id == action.payload.data.id);
+            let index = state.rooms.findIndex(x => x.id == action.payload.data.id);
             state.rooms[index] = action.payload.data;
             return {
                 ...state,
@@ -73,7 +79,7 @@ export default function reducerRoom(state = initialState, action) {
                 isLoading: false,
                 isError: true
             }
-        
+
         // Delete Room
         case `${types.DELETE_ROOM}_PENDING`:
             return {
