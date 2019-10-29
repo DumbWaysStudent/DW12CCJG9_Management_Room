@@ -61,7 +61,7 @@ class CheckIn extends Component {
                       if (this.props.localOrders.isSuccess) {
                         // this.setCheckOutTimerData();
                         this.setState({
-                          interval: setInterval(this.setCheckOutTimer, 1000),
+                          interval: setInterval(this.setCheckOutTimer, 60000),
                           signInData: result,
                           customerPicker: (this.props.localCustomers.customers != false) ? this.props.localCustomers.customers[0].id : null
                         })
@@ -186,7 +186,7 @@ class CheckIn extends Component {
     })
     .then(() => {
       this.setState({
-        interval: setInterval(this.setCheckOutTimer, 1000)
+        interval: setInterval(this.setCheckOutTimer, 60000)
       })
     })
   }
