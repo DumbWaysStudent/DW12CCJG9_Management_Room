@@ -168,7 +168,7 @@ class CheckIn extends Component {
           duration: inputDuration,
           is_booked: true,
           is_done: false,
-          order_end_time: new Date(Date.now()).toISOString()
+          order_end_time: moment(new Date(Date.now()).toISOString()).add((Number.parseInt(inputDuration) + 1), 'minute').toDate().toISOString()
         },
         token: this.state.signInData.token
       })

@@ -8,7 +8,11 @@ exports.getCustomers = (req, res) => {
             res.send(customers);
         })
         .catch(e => {
-            throw e;
+            res.send({
+                status: 'error',
+                message: "Can't load data",
+                error: e
+            });
         });
 }
 
@@ -33,7 +37,11 @@ exports.addCustomer = (req, res) => {
             }
         })
         .catch(e => {
-            throw e;
+            res.send({
+                status: 'error',
+                message: "Can't add Customer",
+                error: e
+            });
         })
 }
 
@@ -53,7 +61,11 @@ exports.updateCustomer = (req, res) => {
             })
         })
         .catch(e => {
-            throw e;
+            res.send({
+                status: 'error',
+                message: "Can't edit Customer",
+                error: e
+            });
         })
 }
 
@@ -67,6 +79,10 @@ exports.deleteCustomer = (req, res) => {
             });
         })
         .catch(e => {
-            throw e;
+            res.send({
+                status: 'error',
+                message: "Can't delete",
+                error: e
+            });
         })
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux';
+import { Root } from 'native-base';
 import { mapping, light as lightTheme } from '@eva-design/eva';
 import { ApplicationProvider } from 'react-native-ui-kitten';
 import { createReduxContainer } from 'react-navigation-redux-helpers';
@@ -19,7 +20,9 @@ export default class App extends Component {
     return (
       <Provider store={store}>
         <ApplicationProvider mapping={mapping} theme={lightTheme}>
+          <Root>
             <AppWithNavigationState />
+          </Root>
           </ApplicationProvider>
       </Provider>
     );

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { AsyncStorage, Modal, View} from 'react-native';
+import { Toast } from 'native-base';
 import { Text, Input, Layout, Button, Spinner } from 'react-native-ui-kitten';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Axios from 'axios';
@@ -32,7 +33,11 @@ class SignIn extends Component {
         .then(result => {
             if (result.data.status == 'error') {
                 this.setState({ isLoading: false});
-                alert(result.data.message);
+                Toast.show({
+                    text: result.data.message,
+                    duration: 1000,
+                    style: {backgroundColor: '#ff3333'}
+                });
             } else {
               AsyncStorage
               .setItem('signInData', JSON.stringify(result.data))
@@ -42,18 +47,30 @@ class SignIn extends Component {
               })
               .catch(e => {
                   this.setState({ isLoading: false});
-                  alert('Error Async: cannot sign in');
+                  Toast.show({
+                    text: 'Error: cannot sign in',
+                    duration: 1000,
+                    style: {backgroundColor: '#ff3333'}
+                });
               })
             }
         })
         .catch(e => {
             this.setState({ isLoading: false});
-            console.log(e);
-            alert('Error: cannot sign in');
+            Toast.show({
+                text: 'Error: cannot sign in',
+                duration: 1000,
+                style: {backgroundColor: '#ff3333'}
+            });
         }) 
       } else {
             this.setState({ isLoading: false});
-          alert(verify.message);
+            Toast.show({
+                text: verify.message,
+                textStyle: {textAlign: 'center'},
+                duration: 1000,
+                style: {backgroundColor: '#ff3333', margin: 5, borderRadius: 5, width: '50%', alignSelf: 'center'}
+            });
       }
   }
 

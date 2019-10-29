@@ -82,6 +82,7 @@ exports.register = (req, res) => {
                 .catch(err => {
                     res.send({
                         status: 'error',
+                        message: "Can't sign up",
                         err
                     })
                 })

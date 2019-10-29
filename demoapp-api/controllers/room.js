@@ -8,7 +8,11 @@ exports.getRooms = (req, res) => {
             res.send(rooms);
         })
         .catch(e => {
-            throw e;
+            res.send({
+                status: 'error',
+                message: "Can't load data",
+                error: e
+            });
         })
 }
 
@@ -34,7 +38,11 @@ exports.addRoom = (req, res) => {
             }
         })
         .catch(e => {
-            throw e;
+            res.send({
+                status: 'error',
+                message: "Can't add room",
+                error: e
+            });
         })
 }
 
@@ -51,7 +59,11 @@ exports.updateRoom = (req, res) => {
             })
         })
         .catch(e => {
-            throw e;
+            res.send({
+                status: 'error',
+                message: "Can't edit room",
+                error: e
+            });
         })
 }
 
@@ -65,6 +77,10 @@ exports.deleteRoom = (req, res) => {
         });
     })
     .catch(e => {
-        throw e;
+        res.send({
+            status: 'error',
+            message: "Can't delete room",
+            error: e
+        });
     })
 }
