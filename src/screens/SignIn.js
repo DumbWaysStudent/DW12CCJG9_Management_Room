@@ -110,9 +110,10 @@ class SignIn extends Component {
             </View>
         </Modal>
         <Layout style={styles.frontHeader}>
+        <Icon name="leaf" size={8} style={{position: 'absolute', top: 5, left: 125}} />
             <Text
                 style={styles.signInAppTitle}
-                category="h4">
+                category="h3">
                 Leaf Hotel
             </Text>
             <Text

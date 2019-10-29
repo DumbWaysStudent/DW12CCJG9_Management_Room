@@ -10,7 +10,7 @@ export default StyleSheet.create({
     },
     frontHeader: {
         backgroundColor: 'rgba(0,0,0,0)',
-        marginTop: 40
+        marginTop: 70
     },
     ssHeader: {
         marginBottom: 12
@@ -22,14 +22,15 @@ export default StyleSheet.create({
         textAlign: 'center'
     },
     signInAppSubtitle: {
-        textAlign: 'center'
+        textAlign: 'center',
+        // paddingLeft: 24
     },
     formContainer: {
         padding: 10,
         borderWidth: 1,
         borderColor: '#dfdfdf',
         borderRadius: 4,
-        marginTop: 50
+        marginTop: 20
     },
     signUp: {
         marginTop: 30
@@ -46,6 +47,9 @@ export default StyleSheet.create({
         borderRadius: 3,
         paddingVertical: 80 / 3,
         paddingHorizontal: 40
+    },
+    gridText: {
+        textAlign: 'center'
     },
     isBookedTrue: {
         backgroundColor: 'grey',
@@ -119,7 +123,18 @@ export default StyleSheet.create({
         paddingVertical: 15
     },
     customerModal: {
-        height: 500
+        height: 550
+    },
+    customerListAvatar: {
+        width: 80,
+        height: 80,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        backgroundColor: '#444'
+    },
+    customerListInfo: {
+        marginLeft: 10,
+        marginVertical: 10
     },
 
     // Settings

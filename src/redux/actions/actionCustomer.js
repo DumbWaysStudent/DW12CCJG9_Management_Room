@@ -18,7 +18,7 @@ export const handleAddCustomer = (params) => ({
     payload: axios({
         method: 'post',
         url: `${API_URL}/customer`,
-        data: params.data,
+        data: params.data.formData,
         headers: {
             Authorization: params.token
         }

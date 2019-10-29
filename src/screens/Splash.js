@@ -67,6 +67,7 @@ class Splash extends Component {
       <Layout style={styles.container}>
         <View style={{alignItems: 'center', marginVertical: 200}}>
           <Layout style={[styles.frontHeader, styles.ssHeader]}>
+          <Icon name="leaf" size={10} style={{position: 'absolute', top: 6, left: 30}} />
             <Text
               style={styles.signInAppTitle}
               category="h1">

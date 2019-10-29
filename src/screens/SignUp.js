@@ -138,6 +138,7 @@ class SignUp extends Component {
             <Input
               style={styles.input}
               value={this.state.inputEmail}
+              keyboardType="email-address"
               label="E-Mail"
               placeholder="Place your email here"
               size="small"

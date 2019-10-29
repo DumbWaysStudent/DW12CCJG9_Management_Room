@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, AsyncStorage } from 'react-native';
 import * as actionCustomer from './../redux/actions/actionCustomer';
-import { Layout, Text, Input, Button, Spinner } from 'react-native-ui-kitten';
+import { Layout, Text, Input, Button, Spinner, Avatar } from 'react-native-ui-kitten';
 import { Fab, Card, Toast } from 'native-base';
 import { connect } from 'react-redux'
 import Modal from 'react-native-modal';
@@ -9,6 +9,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { FlatGrid } from 'react-native-super-grid';
 import styles from './../assets/styles/main.styles';
 import { ScrollView } from 'react-native-gesture-handler';
+import ImagePicker from 'react-native-image-picker';
 
 class Customer extends Component {
   constructor(props) {
@@ -19,10 +20,11 @@ class Customer extends Component {
       inputCustomerName: '',
       inputIdNum: '',
       inputPhoneNum: '',
+      inputAvatar: null,
       editModalId: 0,
-      inputImage: 'default-pic',
+      avatar: {uri: 'https://i1.wp.com/kiryuu.co/wp-content/uploads/2019/09/Kiryuu-Sampul.png'},
       signInData: null,
-      onDelete: false
+      onDelete: false,
     };
 
     AsyncStorage.getItem('signInData', (e, result) => {
@@ -54,9 +56,44 @@ class Customer extends Component {
     });
   }
 
-  addCustomer = () => {
-    const { inputCustomerName, inputIdNum, inputPhoneNum, inputImage } = this.state;
+  imagePickerHandler() {
+    const options = {
+      title: 'Select Avatar',
+      customButton: [{
+        name: 'fb',
+        title: 'Choose Photo From Facebook'
+      }],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images'
+      }
+    }
+    ImagePicker.showImagePicker(options, (response) => {
+      // console.log('Response =', response);
 
+      if (response.didCancel) {
+        console.log('User Cancelled image picker')
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error)
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton)
+      } else {
+        const source = {
+          uri: response.uri,
+          type: response.type,
+          name: response.fileName
+        }
+
+        this.setState({
+          inputAvatar : source,
+        })
+      }
+    })
+  }
+
+  addCustomer = () => {
+    const { inputCustomerName, inputIdNum, inputPhoneNum, inputAvatar } = this.state;
+    let formData = new FormData();
     if (inputCustomerName == '' && inputIdNum == '' && inputPhoneNum == '') {
       Toast.show({
         text: "Error: All Field Except Photos Cannot Be Empty!",
@@ -65,12 +102,13 @@ class Customer extends Component {
         style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
       });
     } else {
+      formData.append('name', inputCustomerName);
+      formData.append('identity_number', inputIdNum);
+      formData.append('phone_number', inputPhoneNum);
+      formData.append('avatar', inputAvatar);
       this.props.handleAddCustomer({
         data: {
-          name: this.state.inputCustomerName,
-          identity_number: this.state.inputIdNum,
-          phone_number: this.state.inputPhoneNum,
-          image: this.state.inputImage
+          formData
         },
         token: this.state.signInData.token
       })
@@ -80,14 +118,14 @@ class Customer extends Component {
           inputCustomerName: '',
           inputIdNum: '',
           inputPhoneNum: '',
-          inputImage: ''
+          inputAvatar: null
         })
       })
     }
   }
 
   editCustomer = () => {
-    const { inputCustomerName, inputIdNum, inputPhoneNum, inputImage } = this.state;
+    const { inputCustomerName, inputIdNum, inputPhoneNum, avatar } = this.state;
 
     if (inputCustomerName == '' && inputIdNum == '' && inputPhoneNum == '') {
       Toast.show({
@@ -102,7 +140,7 @@ class Customer extends Component {
           name: this.state.inputCustomerName,
           identity_number: this.state.inputIdNum,
           phone_number: this.state.inputPhoneNum,
-          image: this.state.inputImage
+          avatar: this.state.avatar
         },
         id: this.state.editModalId,
         token: this.state.signInData.token
@@ -113,7 +151,7 @@ class Customer extends Component {
           inputCustomerName: '',
           inputIdNum: '',
           inputPhoneNum: '',
-          inputImage: ''
+          inputAvatar: null
         })
       })
     }
@@ -147,7 +185,7 @@ class Customer extends Component {
           inputCustomerName: '',
           inputIdNum: '',
           inputPhoneNum: '',
-          inputImage: ''
+          inputAvatar: null
         });
       })
   }
@@ -169,7 +207,7 @@ class Customer extends Component {
             inputCustomerName: '',
             inputIdNum: '',
             inputPhoneNum: '',
-            inputImage: ''
+            inputAvatar: null
           })}
           backdropOpacity={0.3}>
           <Layout style={[styles.modalBox, styles.customerModal]}>
@@ -187,6 +225,7 @@ class Customer extends Component {
                 <Input
                   style={styles.modalInput}
                   size="small"
+                  keyboardType="number-pad"
                   label="Identity Number"
                   value={this.state.inputIdNum}
                   onChangeText={(text) => this.setState({ inputIdNum: text })}
@@ -195,14 +234,15 @@ class Customer extends Component {
                 <Input
                   style={styles.modalInput}
                   size="small"
+                  keyboardType="phone-pad"
                   label="Phone Number"
                   value={this.state.inputPhoneNum}
                   onChangeText={(text) => this.setState({ inputPhoneNum: text })}
                 />
 
                 <View style={{ margin: 8, flexDirection: 'row' }}>
-                  <Icon name="user-circle" size={60} />
-                  <Icon name="camera" size={20} />
+                  <Avatar style={styles.customerListAvatar} source={(this.state.inputAvatar != null) ? {uri: this.state.inputAvatar.uri} : this.state.avatar} /> 
+                  <Icon name="camera" size={20} onPress={() => this.imagePickerHandler()} />
                 </View>
               </ScrollView>
               <View style={styles.modalBoxBtnContainer}>
@@ -211,7 +251,8 @@ class Customer extends Component {
                   inputCustomerName: '',
                   inputIdNum: '',
                   inputPhoneNum: '',
-                  inputImage: ''
+
+                  inputAvatar: null
                 })} style={styles.modalBoxBtn}>Cancel</Button>
                 <Button onPress={() => this.addCustomer()} style={styles.modalBoxBtn}>Save</Button>
               </View>
@@ -226,13 +267,13 @@ class Customer extends Component {
             inputCustomerName: '',
             inputIdNum: '',
             inputPhoneNum: '',
-            inputImage: ''
+            inputAvatar: null
           })}
           backdropOpacity={0.3}>
           <Layout style={[styles.modalBox, styles.customerModal]}>
             <Button onPress={() => this.deleteCustomer(this.state.editModalId)} style={(this.state.onDelete ? [styles.modalTrashBtn, styles.modalTrashBtnOnPress] : styles.modalTrashBtn)}> <Icon size={15} name="trash-alt" />
             </Button>
-            <Text style={styles.modalBoxTitle} category="h5">Add Customer</Text>
+            <Text style={styles.modalBoxTitle} category="h5">Edit Customer</Text>
             <Layout>
               <ScrollView>
                 <Input
@@ -247,6 +288,7 @@ class Customer extends Component {
                   style={styles.modalInput}
                   size="small"
                   label="Identity Number"
+                  keyboardType="number-pad"
                   value={this.state.inputIdNum}
                   onChangeText={(text) => this.setState({ inputIdNum: text })}
                 />
@@ -255,12 +297,13 @@ class Customer extends Component {
                   style={styles.modalInput}
                   size="small"
                   label="Phone Number"
+                  keyboardType="phone-pad"
                   value={this.state.inputPhoneNum}
                   onChangeText={(text) => this.setState({ inputPhoneNum: text })}
                 />
 
                 <View style={{ margin: 8, flexDirection: 'row' }}>
-                  <Icon name="user-circle" size={60} />
+                <Avatar style={styles.customerListAvatar} source={this.state.profile_image} />
                   <Icon name="camera" size={20} />
                 </View>
               </ScrollView>
@@ -270,7 +313,7 @@ class Customer extends Component {
                   inputCustomerName: '',
                   inputIdNum: '',
                   inputPhoneNum: '',
-                  inputImage: ''
+                  inputAvatar: null
                 })} style={styles.modalBoxBtn}>Cancel</Button>
                 <Button onPress={() => this.editCustomer()} style={styles.modalBoxBtn}>Save</Button>
               </View>
@@ -287,12 +330,13 @@ class Customer extends Component {
                 inputCustomerName: item.name,
                 inputIdNum: item.identity_number,
                 inputPhoneNum: item.phone_number,
-                inputImage: item.image
+                inputAvatar: item.image
               })}
               style={[styles.checkinGrid, styles.customerCard]}>
-              <Icon name="user-circle" size={50} style={{ marginVertical: 10, marginRight: 10 }} />
-              <View>
-                <Text>{item.name}</Text>
+              {/* <Icon name="user-circle" size={50} style={{ marginVertical: 10, marginRight: 10 }} /> */}
+              <Avatar style={styles.customerListAvatar} source={{uri: `http://192.168.0.35:5000/${item.image}`}} />
+              <View style={styles.customerListInfo}>
+                <Text style={{fontWeight: 'bold'}}>{item.name}</Text>
                 <Text>{item.identity_number}</Text>
                 <Text>{item.phone_number}</Text>
               </View>

@@ -1,12 +1,14 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
+const multer = require('multer');
 require('express-group-routes');
 
 const app = express();
 const port = 5000;
 
 app.use(bodyParser.json());
-app.use('/public', express.static('public'));
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 //------- Controllers -------//
 const UserController = require('./controllers/user');
@@ -16,6 +18,7 @@ const OrderController = require('./controllers/order');
 
 //------- Middleware -------//
 const {authenticated} = require('./middleware');
+const { upload } = require('./upload');
 
 app.get('/', (req, res) => {
     res.send('CONNECTED TO LEAF HOTEL API');
@@ -36,7 +39,7 @@ app.group('/api/v2/', (router) => {
 
     // ---------- Customer ----------//
     router.get('/customers', authenticated, CustomerController.getCustomers);
-    router.post('/customer', authenticated, CustomerController.addCustomer);
+    router.post('/customer', authenticated, upload.single('avatar'), CustomerController.addCustomer);
     router.put('/customer/:id', authenticated, CustomerController.updateCustomer);
     router.delete('/customer/:id', authenticated, CustomerController.deleteCustomer);
 

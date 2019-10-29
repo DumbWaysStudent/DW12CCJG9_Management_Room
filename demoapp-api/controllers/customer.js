@@ -17,12 +17,18 @@ exports.getCustomers = (req, res) => {
 }
 
 exports.addCustomer = (req, res) => {
+    const { name, identity_number, phone_number } = req.body;
     Customer
-        .findOne({ where: { identity_number: req.body.identity_number } })
+        .findOne({ where: { identity_number } })
         .then((result) => {
             if (!result) {
                 Customer
-                .create(req.body)
+                .create({
+                    name,
+                    identity_number,
+                    phone_number,
+                    image: req.file.path
+                })
                 .then(result => {
                     res.send(result);
                 })
@@ -37,6 +43,7 @@ exports.addCustomer = (req, res) => {
             }
         })
         .catch(e => {
+            console.log(e)
             res.send({
                 status: 'error',
                 message: "Can't add Customer",

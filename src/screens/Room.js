@@ -56,7 +56,7 @@ class Room extends Component {
       })
       .then(() => {
         this.setState({
-          editRoomModalDisplay: false,
+          addRoomModalDisplay: false,
           inputRoomName: '',
           editModalValue: '',
           editModalId: 0,
@@ -174,7 +174,7 @@ class Room extends Component {
             <View style={styles.checkinGrid} onTouchEndCapture={() => this.editRoomValueSetter({
               editModalValue: item.name,
               editModalId: item.id
-            })}><Text>{item.name}</Text></View>
+            })}><Text style={styles.gridText}>{item.name}</Text></View>
           }
         />
         <Fab

@@ -7,6 +7,18 @@ const initialState = {
     orders: []
 };
 
+function compare(a, b) {
+    if (a.order_end_time < b.order_end_time) {
+        return -1;
+    }
+
+    if (a.order_end_time > b.order_end_time) {
+        return 1
+    }
+
+    return 0;
+}
+
 export default function reducerOrder(state = initialState, action) {
     switch (action.type) {
         // GET Orders
@@ -20,7 +32,7 @@ export default function reducerOrder(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 isSuccess: true,
-                orders: action.payload.data.sort()
+                orders: action.payload.data.sort(compare)
             }
         case `${types.GET_ORDERS}_REJECTED`:
             return {
@@ -28,7 +40,7 @@ export default function reducerOrder(state = initialState, action) {
                 isLoading: false,
                 isError: true
             }
-        
+
         // Add CheckIn
         case `${types.CHECK_IN}_PENDING`:
             return {
@@ -37,7 +49,7 @@ export default function reducerOrder(state = initialState, action) {
             }
         case `${types.CHECK_IN}_FULFILLED`:
             state.orders.push(action.payload.data.result)
-            state.orders = state.orders.sort()
+            state.orders = state.orders.sort(compare)
             return {
                 ...state,
                 isLoading: false,
@@ -62,7 +74,7 @@ export default function reducerOrder(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 isSuccess: true,
-                orders: newData.sort()
+                orders: newData.sort(compare)
             }
         case `${types.CHECK_OUT}_REJECTED`:
             return {

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, AsyncStorage } from 'react-native';
-import { Layout, Button, List, ListItem, Spinner } from 'react-native-ui-kitten';
+import { Layout, Button, List, ListItem, Spinner, Avatar } from 'react-native-ui-kitten';
 import ImagePicker from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import styles from './../assets/styles/main.styles';
@@ -15,7 +15,8 @@ class Settings extends Component {
     super(props);
     this.state = {
       signInData: null,
-      avatar: null,
+      avatar: '',
+      imagePic: null,
       name: '',
       email: ''
     };
@@ -58,7 +59,7 @@ class Settings extends Component {
       }
     }
     ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response =', response);
+      // console.log('Response =', response);
 
       if (response.didCancel) {
         console.log('User Cancelled image picker')
@@ -74,7 +75,7 @@ class Settings extends Component {
         }
 
         this.setState({
-          avatar: source,
+          imagePic: source,
         })
       }
     })
@@ -96,14 +97,15 @@ class Settings extends Component {
     return (
       <Layout style={styles.container} level="4">
         <Modal
-          isVisible={false}
+          isVisible={this.props.localProfile.isLoading}
           backdropOpacity={0.3}>
           <View style={{ flex: 1, position: 'absolute', top: 220, right: 140 }}>
             <Spinner />
           </View>
         </Modal>
         <Layout level="1" style={{ flexDirection: 'row', padding: 10, borderRadius: 5 }}>
-          <Icon size={60} name="user-circle" />
+        <Avatar style={styles.customerListAvatar} source={(this.state.avatar != 'default-pic') ? {uri: `http://192.168.0.35:5000/${this.state.avatar}`} : (this.state.imagePic != null) ? {uri: this.state.imagePic.uri} : ''} />
+        <Icon name="edit" size={20} style={{position: 'absolute', right: 0, margin: 8}}/>
           <View style={styles.profileTextContainer}>
             <Text style={styles.profileEmail}>{this.state.email}</Text>
             <Text style={styles.profileName}>{this.state.name}</Text>

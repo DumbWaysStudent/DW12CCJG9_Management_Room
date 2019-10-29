@@ -198,20 +198,23 @@ class CheckIn extends Component {
 
         this.editValueSetter({
           inputRoomName: findSpecificRoom(this.props.localOrders.orders[0]).name,
-          inputDuration: this.durationSetter(this.props.localOrders.orders, findSpecificRoom(this.props.localOrders.orders[0])),
+          inputDuration: '',
           roomID: findSpecificRoom(this.props.localOrders.orders[0]).id,
+          customerPicker:(this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id)].customer_id : 0,
           durationLeft: this.durationLeftSetter(this.props.localOrders.orders, findSpecificRoom(this.props.localOrders.orders[0])),
           bookedStatus: (this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id)].is_booked : false
-        });
+        }, false);
 
-        this.setState({ addCheckInDisplay: true });
+        this.checkOut();
+
+        // this.setState({ addCheckInDisplay: true });
 
       }
     }
   }
 
-  editValueSetter = (params) => {
-    params.addCheckInDisplay = true;
+  editValueSetter = (params, modalDisplay) => {
+    params.addCheckInDisplay = modalDisplay;
     this.setState(params);
   }
 
@@ -314,7 +317,7 @@ class CheckIn extends Component {
     return (
       <Layout style={styles.container}>
         <Modal
-          isVisible={this.props.localOrders.isLoading}
+          isVisible={this.props.localRooms.isLoading}
           swipeThreshold={1}
           backdropOpacity={0.3}>
           <View style={{ flex: 1, position: 'absolute', top: 220, right: 140 }}>
@@ -343,6 +346,7 @@ class CheckIn extends Component {
                 </Text>
               <View style={styles.modalPicker}>
                 <Picker
+                  enabled={!this.state.bookedStatus}
                   selectedValue={this.state.customerPicker}
                   style={styles.pickerItem}
                   onValueChange={(itemValue, ItemIndex) =>
@@ -357,6 +361,7 @@ class CheckIn extends Component {
               <Input
                 style={styles.modalInput}
                 size="small"
+                keyboardType="number-pad"
                 label={(this.state.bookedStatus) ? 'Duration Left(minutes)' : 'Duration'}
                 value={(this.state.bookedStatus) ? this.state.durationLeft : this.state.inputDuration}
                 disabled={this.state.bookedStatus}
@@ -386,11 +391,12 @@ class CheckIn extends Component {
           renderItem={({ item, index }) =>
             <View onTouchEndCapture={() => this.editValueSetter({
               inputRoomName: item.name,
-              inputDuration: this.durationSetter(this.props.localOrders.orders, item),
+              inputDuration: '',
               roomID: item.id,
+              customerPicker: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].customer_id : this.state.customerPicker,
               durationLeft: this.durationLeftSetter(this.props.localOrders.orders, item),
               bookedStatus: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].is_booked : false
-            })} style={
+            }, true)} style={
               ((this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1)
                 ? (this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].is_booked
                   ? [styles.checkinGrid, styles.isBookedTrue]
