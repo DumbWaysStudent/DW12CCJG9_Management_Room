@@ -129,7 +129,7 @@ class CheckIn extends Component {
       } else {
         timeLeft = '0';
       }
-      console.log(timeLeft);
+      // console.log(timeLeft);
 
       if (timeLeft == '0') {
         clearInterval(this.state.interval);
@@ -194,7 +194,7 @@ class CheckIn extends Component {
   durationSetter = (data, dataToCompare) => {
     let index = data.findIndex(x => x.room_id == dataToCompare.id);
     if (index !== -1) {
-      return data[index].duration.toString();
+      return (data[index].duration - 1).toString();
     } else {
       return '0';
     }
@@ -209,7 +209,7 @@ class CheckIn extends Component {
       if (matches !== null) {
         if (durationLeft.search('ago') === -1) {
 
-          return matches[0];
+          return (Number.parseInt(matches[0]) - 1).toString();
         } else {
           return '0';
         }
@@ -262,7 +262,7 @@ class CheckIn extends Component {
                   {this.props.localCustomers.customers.map((item, index) =>
                     ((this.props.localCustomers.customers != false)
                       ? <Picker.Item label={`${item.name} - ${item.phone_number}`} value={item.id} />
-                      : console.log())
+                      : '')
                   )}
                 </Picker>
               </View>
