@@ -20,7 +20,7 @@ export default function reducerOrder(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 isSuccess: true,
-                orders: action.payload.data
+                orders: action.payload.data.sort()
             }
         case `${types.GET_ORDERS}_REJECTED`:
             return {
@@ -37,6 +37,7 @@ export default function reducerOrder(state = initialState, action) {
             }
         case `${types.CHECK_IN}_FULFILLED`:
             state.orders.push(action.payload.data.result)
+            state.orders = state.orders.sort()
             return {
                 ...state,
                 isLoading: false,
@@ -61,7 +62,7 @@ export default function reducerOrder(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 isSuccess: true,
-                orders: newData
+                orders: newData.sort()
             }
         case `${types.CHECK_OUT}_REJECTED`:
             return {

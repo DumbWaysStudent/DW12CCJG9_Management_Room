@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, AsyncStorage } from 'react-native';
 import { Layout, Button, List, ListItem, Spinner } from 'react-native-ui-kitten';
+import ImagePicker from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import styles from './../assets/styles/main.styles';
 import * as actionProfile from './../redux/actions/actionProfile';
@@ -14,7 +15,7 @@ class Settings extends Component {
     super(props);
     this.state = {
       signInData: null,
-      avatar: '',
+      avatar: null,
       name: '',
       email: ''
     };
@@ -42,6 +43,41 @@ class Settings extends Component {
         }
       }
     });
+  }
+
+  imagePickerHandler() {
+    const options = {
+      title: 'Select Avatar',
+      customButton: [{
+        name: 'fb',
+        title: 'Choose Photo From Facebook'
+      }],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images'
+      }
+    }
+    ImagePicker.showImagePicker(options, (response) => {
+      console.log('Response =', response);
+
+      if (response.didCancel) {
+        console.log('User Cancelled image picker')
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error)
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton)
+      } else {
+        const source = {
+          uri: response.uri,
+          type: response.type,
+          name: response.fileName
+        }
+
+        this.setState({
+          avatar: source,
+        })
+      }
+    })
   }
 
   signOut = () => {
