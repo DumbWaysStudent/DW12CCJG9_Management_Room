@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, AsyncStorage, Picker, Alert } from 'react-native';
+import { View, AsyncStorage, Picker, RefreshControl } from 'react-native';
 import { Layout, Text, Input, Button, Spinner } from 'react-native-ui-kitten';
 import { Toast } from 'native-base';
 import { connect } from 'react-redux'
@@ -20,21 +20,25 @@ class CheckIn extends Component {
       inputRoomName: '',
       customers: null,
       customerPicker: null,
-      inputDuration: '0',
+      inputDuration: '',
       durationLeft: '0',
       roomID: null,
       bookedStatus: false,
       signInData: null,
-      counter: 0,
       orders_end_time: [],
+      searchFilterData: [],
+      searchStatus: false,
       interval: null,
-      checkOutOpenStatus: false
+      refreshing: false
     };
 
     AsyncStorage.getItem('signInData', (e, result) => {
       if (!e) {
         if (result !== null) {
           result = JSON.parse(result);
+          this.setState({
+            signInData: result
+          })
 
           // this.props.handleGetOrders({
           //   token: result.token
@@ -47,74 +51,11 @@ class CheckIn extends Component {
           // }
           // })
 
-          this.props.handleGetRooms({
-            token: result.token
-          })
-            .then(() => {
-              this.props.handleGetOrders({
-                token: result.token
-              })
-                .then(() => {
-                  this.props.handleGetCustomers({
-                    token: result.token
-                  })
-                    .then(() => {
-                      if (this.props.localOrders.isSuccess) {
-                        // this.setCheckOutTimerData();
-                        if (this.props.localOrders.orders.hasOwnProperty('status')) {
-                          if (this.props.localOrders.orders.status == 'error') {
-                            Toast.show({
-                              text: "Error: Can't load data, please check your internet connection and try again.",
-                              textStyle: { fontSize: 12, fontWeight: 'bold' },
-                              duration: 2000,
-                              style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-                            });
-                          }
-                        } else {
-                          this.setState({
-                            interval: setInterval(this.setCheckOutTimer, 1000),
-                            signInData: result,
-                            customerPicker: (this.props.localCustomers.customers != false) ? this.props.localCustomers.customers[0].id : null
-                          })
-                        }
-                      } else {
-                        Toast.show({
-                          text: "Error: Can't load data, please check your internet connection and try again.",
-                          textStyle: { fontSize: 12, fontWeight: 'bold' },
-                          duration: 2000,
-                          style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-                        });
-                      }
-                    })
-                    .catch(() => {
-                      Toast.show({
-                        text: "Error: Can't load data, please check your internet connection and try again.",
-                        textStyle: { fontSize: 12, fontWeight: 'bold' },
-                        duration: 2000,
-                        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-                      });
-                    })
-                })
-                .catch(() => {
-                  Toast.show({
-                    text: "Error: Can't load data, please check your internet connection and try again.",
-                    textStyle: { fontSize: 12, fontWeight: 'bold' },
-                    duration: 2000,
-                    style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-                  });
-                })
-            })
-            .catch(() => {
-              Toast.show({
-                text: "Error: Can't load data, please check your internet connection and try again.",
-                textStyle: { fontSize: 12, fontWeight: 'bold' },
-                duration: 2000,
-                style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-              });
-            })
+          this.loadData(result.token);
+
         } else {
           Toast.show({
-            text: "Error: Can't load data, please check your internet connection and try again.",
+            text: "Error: Can't load data.",
             textStyle: { fontSize: 12, fontWeight: 'bold' },
             duration: 2000,
             style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
@@ -122,7 +63,7 @@ class CheckIn extends Component {
         }
       } else {
         Toast.show({
-          text: "Error: Can't load data, please check your internet connection and try again.",
+          text: "Error: Can't load data.",
           textStyle: { fontSize: 12, fontWeight: 'bold' },
           duration: 2000,
           style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
@@ -200,9 +141,11 @@ class CheckIn extends Component {
           inputRoomName: findSpecificRoom(this.props.localOrders.orders[0]).name,
           inputDuration: '',
           roomID: findSpecificRoom(this.props.localOrders.orders[0]).id,
-          customerPicker:(this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id)].customer_id : 0,
+          customerPicker: (this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id) !== -1)
+            ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id)].customer_id : 0,
           durationLeft: this.durationLeftSetter(this.props.localOrders.orders, findSpecificRoom(this.props.localOrders.orders[0])),
-          bookedStatus: (this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id)].is_booked : false
+          bookedStatus: (this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id) !== -1)
+            ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id)].is_booked : false
         }, false);
 
         this.checkOut();
@@ -220,7 +163,7 @@ class CheckIn extends Component {
 
   addCheckIn = () => {
     const { roomID, inputDuration, customerPicker } = this.state;
-    if (roomID !== null && inputDuration !== '0' && customerPicker != null) {
+    if (roomID !== null && inputDuration !== '' && customerPicker != null) {
       this.props.handleAddCheckIn({
         data: {
           room_id: roomID,
@@ -240,16 +183,19 @@ class CheckIn extends Component {
               duration: 2000,
               style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
             });
+          } else {
+            this.setState({
+              inputRoomName: '',
+              inputDuration: '',
+              roomID: null,
+              durationLeft: '0',
+              bookedStatus: false
+            })
           }
-          this.setState({
-            addCheckInDisplay: false,
-            inputRoomName: '',
-            inputDuration: '0',
-            roomID: null,
-            durationLeft: '0',
-            bookedStatus: false
-          })
         })
+      this.setState({
+        addCheckInDisplay: false,
+      })
     } else {
       Toast.show({
         text: 'Error: customer not found and duration cannot be empty',
@@ -312,18 +258,121 @@ class CheckIn extends Component {
     }
   }
 
+  loadData = (token) => {
+    this.props.handleGetRooms({
+      token: token
+    })
+      .then(() => {
+        this.props.handleGetOrders({
+          token: token
+        })
+          .then(() => {
+            this.props.handleGetCustomers({
+              token: token
+            })
+              .then(() => {
+                if (this.props.localOrders.isSuccess) {
+                  // this.setCheckOutTimerData();
+                  if (this.props.localOrders.orders.hasOwnProperty('status')) {
+                    if (this.props.localOrders.orders.status == 'error') {
+                      Toast.show({
+                        text: this.props.localOrders.orders.message,
+                        textStyle: { fontSize: 12, fontWeight: 'bold' },
+                        duration: 2000,
+                        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+                      });
+                    }
+                  } else {
+                    this.setState({
+                      interval: setInterval(this.setCheckOutTimer, 1000),
+                      customerPicker: (this.props.localCustomers.customers != false) ? this.props.localCustomers.customers[0].id : null
+                    })
+                  }
+                } else {
+                  Toast.show({
+                    text: "Error: Can't load data, please check your internet connection and try again.",
+                    textStyle: { fontSize: 12, fontWeight: 'bold' },
+                    duration: 2000,
+                    style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+                  });
+                }
+              })
+              .catch(() => {
+                Toast.show({
+                  text: "Error: Can't load data, please check your internet connection and try again.",
+                  textStyle: { fontSize: 12, fontWeight: 'bold' },
+                  duration: 2000,
+                  style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+                });
+              })
+          })
+          .catch(() => {
+            Toast.show({
+              text: "Error: Can't load data, please check your internet connection and try again.",
+              textStyle: { fontSize: 12, fontWeight: 'bold' },
+              duration: 2000,
+              style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+            });
+          })
+      })
+      .catch(() => {
+        Toast.show({
+          text: "Error: Can't load data, please check your internet connection and try again.",
+          textStyle: { fontSize: 12, fontWeight: 'bold' },
+          duration: 2000,
+          style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+        });
+      })
+  }
+
+  searchFilter(text) {
+    console.log(text)
+    if (text != '') {
+      this.setState({
+        searchStatus: true
+      })
+    } else {
+      this.setState({
+        searchStatus: false
+      })
+    }
+    const newData = this.props.localRooms.rooms.filter(item => {
+      const itemData = `${item.name.toUpperCase()}`
+
+      const textData = text.toUpperCase();
+      console.log(itemData.indexOf(textData))
+      return itemData.indexOf(textData) > -1;
+    });
+
+    this.setState({
+      searchFilterData: newData
+    })
+  }
+
+  renderSearchIcon = () => {
+    return (
+      <Icon size={19} name="search" />
+    );
+  }
+
   render() {
-    // console.log(this.props.localOrders.orders[2])
     return (
       <Layout style={styles.container}>
-        <Modal
+        {/* <Modal
           isVisible={this.props.localRooms.isLoading}
           swipeThreshold={1}
           backdropOpacity={0.3}>
           <View style={{ flex: 1, position: 'absolute', top: 220, right: 140 }}>
             <Spinner />
           </View>
-        </Modal>
+        </Modal> */}
+        <Layout style={styles.searchBar}>
+          <Input
+            style={styles.searchBoxInput}
+            onChangeText={text => this.searchFilter(text)}
+            icon={this.renderSearchIcon}
+            placeholder="Search Check In...." size="small" />
+        </Layout>
         <Modal
           isVisible={this.state.addCheckInDisplay}
           onBackButtonPress={() => this.setState({ addCheckInDisplay: false })}
@@ -386,23 +435,27 @@ class CheckIn extends Component {
           </Layout>
         </Modal>
         <FlatGrid
+          refreshing={this.props.localOrders.isLoading}
+          refreshControl={<RefreshControl colors={['#284de0']} refreshing={this.props.localOrders.isLoading} onRefresh={() => this.loadData(this.state.signInData.token)} />}
           itemDimension={100}
-          items={this.props.localRooms.rooms}
+          items={(this.state.searchStatus) ? this.state.searchFilterData : this.props.localRooms.rooms}
           renderItem={({ item, index }) =>
-            <View onTouchEndCapture={() => this.editValueSetter({
-              inputRoomName: item.name,
-              inputDuration: '',
-              roomID: item.id,
-              customerPicker: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].customer_id : this.state.customerPicker,
-              durationLeft: this.durationLeftSetter(this.props.localOrders.orders, item),
-              bookedStatus: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].is_booked : false
-            }, true)} style={
+            <View style={
               ((this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1)
                 ? (this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].is_booked
                   ? [styles.checkinGrid, styles.isBookedTrue]
                   : [styles.checkinGrid, styles.isBookedFalse])
                 : [styles.checkinGrid, styles.isBookedFalse])}>
-              <Text>{item.name}</Text>
+              <Text
+                style={styles.gridText}
+                onPress={() => this.editValueSetter({
+                  inputRoomName: item.name,
+                  inputDuration: '',
+                  roomID: item.id,
+                  customerPicker: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].customer_id : this.state.customerPicker,
+                  durationLeft: this.durationLeftSetter(this.props.localOrders.orders, item),
+                  bookedStatus: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].is_booked : false
+                }, true)}>{item.name}</Text>
             </View>
           }
         />

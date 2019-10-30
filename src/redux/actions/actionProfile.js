@@ -12,3 +12,15 @@ export const handleGetProfile = (params) => ({
         }
     })
 });
+
+export const handleUpdateProfile = (params) => ({
+    type: types.UPDATE_PROFILE,
+    payload: axios({
+        method: 'post',
+        url: `${API_URL}/profile/${params.id}`,
+        data: params.data.formData,
+        headers: {
+            Authorization: params.token
+        }
+    })
+})

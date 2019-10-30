@@ -29,6 +29,7 @@ app.group('/api/v2/', (router) => {
     router.post('/login', UserController.login);
     router.post('/register', UserController.register);
     router.get('/profile/:id', authenticated, UserController.getProfile);
+    router.post('/profile/:id', authenticated, upload.single('avatar'), UserController.updateProfile);
 
     // ---------- Room ----------//
     router.get('/rooms', authenticated, RoomController.getRooms);

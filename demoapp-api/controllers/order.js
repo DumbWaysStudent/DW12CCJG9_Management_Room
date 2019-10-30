@@ -10,7 +10,7 @@ exports.showCheckIn = (req, res) => {
         .catch(e => {
             res.send({
                 status: 'error',
-                message: "Can't load data",
+                message: "Error: Can't load data",
                 error: e
             });
         })

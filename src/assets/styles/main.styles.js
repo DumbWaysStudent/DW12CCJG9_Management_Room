@@ -1,8 +1,12 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window')
 
 export default StyleSheet.create({
     container: {
         flex: 1,
+    },
+    containerFront: {
         padding: 10
     },
     containerHome: {
@@ -39,27 +43,33 @@ export default StyleSheet.create({
         textAlign: 'center',
         margin: 5
     },
+    searchBar: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+        padding: 6
+    },
 
     // Checkin
     checkinGrid: {
         borderWidth: 1,
         borderColor: '#eee',
         borderRadius: 3,
-        paddingVertical: 80 / 3,
-        paddingHorizontal: 40
+        width: 100,
+        height: 80
+        // paddingVertical: 80 / 3,
+        // paddingHorizontal: 40
     },
     gridText: {
-        textAlign: 'center'
+        width: '100%', 
+        height: '100%', 
+        textAlign: 'center', 
+        textAlignVertical: 'center'
     },
     isBookedTrue: {
         backgroundColor: 'grey',
-        width: 100,
-        height: 80
     },
     isBookedFalse: {
         backgroundColor: 'green',
-        width: 100,
-        height: 80
     },
     modalBox: {
         width: '100%',
@@ -130,7 +140,6 @@ export default StyleSheet.create({
         height: 80,
         borderWidth: 1,
         borderColor: '#ddd',
-        backgroundColor: '#444'
     },
     customerListInfo: {
         marginLeft: 10,
@@ -146,6 +155,41 @@ export default StyleSheet.create({
         fontWeight: 'bold'
     },
     profileItem: {
-        marginTop: 15
+        marginTop: 15,
+        marginHorizontal: 7
+    },
+    editProfile: {
+        width: '100%',
+        height: 400,
+        backgroundColor: '#fff',
+        borderRadius: 5
+    },
+    editProfileExitBtn: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        fontSize: 28,
+        margin: 5
+    },
+    customerEditAvatar: {
+        width: 120,
+        height: 120,
+        alignSelf: 'center',
+        borderWidth: 1,
+        borderColor: '#ddd',
+        margin: 10
+    },
+    editProfileCamera: {
+        position: 'absolute',
+        top: 87,
+        left: width/2 + 10,
+        fontSize: 30
+    },
+    editProfileInput: {
+        marginHorizontal: 10
+    },
+    editSaveBtn: {
+        marginTop: 40,
+        marginHorizontal: 10
     }
 });

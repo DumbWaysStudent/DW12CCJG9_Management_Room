@@ -28,3 +28,4 @@ export const CHECK_OUT = 'CHECK_OUT';
 
 // Type Settings
 export const GET_PROFILE = 'GET_PROFILE';
+export const UPDATE_PROFILE = 'UPDATE_PROFILE';

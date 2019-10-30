@@ -7,9 +7,9 @@ const initialState = {
     profile: []
 };
 
-export default function reducerOrder(state = initialState, action) {
+export default function reducerProfile(state = initialState, action) {
     switch (action.type) {
-        // GET Orders
+        // GET Profile
         case `${types.GET_PROFILE}_PENDING`:
             return {
                 ...state,
@@ -20,9 +20,31 @@ export default function reducerOrder(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 isSuccess: true,
-                profile: action.payload.data
+                profile: action.payload.data.result
             }
         case `${types.GET_PROFILE}_REJECTED`:
+            return {
+                ...state,
+                isLoading: false,
+                isError: true
+            }
+        
+        // Update Profile
+        case `${types.UPDATE_PROFILE}_PENDING`:
+            return {
+                ...state,
+                isLoading: true
+            }
+        case `${types.UPDATE_PROFILE}_FULFILLED`:
+            console.log(action.payload.data)
+            // let index = state.profile.findIndex(x => x.id == action.payload.data.result.id );
+            // state.profile[index] = action.payload.data.result;
+            return {
+                ...state,
+                isLoading: false,
+                isSuccess: true,
+            }
+        case `${types.UPDATE_PROFILE}_REJECTED`:
             return {
                 ...state,
                 isLoading: false,

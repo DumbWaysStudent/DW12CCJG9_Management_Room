@@ -101,7 +101,7 @@ class SignIn extends Component {
 
   render() {
     return (
-    <Layout level="4" style={styles.container}>
+    <Layout level="4" style={[styles.container, styles.containerFront]}>
         <Modal visible={this.state.isLoading} transparent={true}>
             <View style={{flex: 1, backgroundColor: 'rgba(0,0,0,0.3)'}}>
                 <View style={{margin: 10}}>

@@ -93,18 +93,47 @@ exports.register = (req, res) => {
 exports.getProfile = (req, res) => {
     User
     .findOne(
-        {where: {id: req.params.id}, attributes: ['name', 'email', 'avatar']}
+        {where: {id: req.params.id}, attributes: ['id', 'name', 'email', 'avatar']}
     )
     .then((result) => {
         res.send({
-            status: 'succes',
+            status: 'success',
             result
         })
     })
     .catch(err => {
         res.send({
             status: 'error',
+            message: "Error: Can't Load Data",
             err
         })
     })
+}
+
+exports.updateProfile = (req, res) => {
+    const {name, email, avatar} = req.body;
+    User
+    .update({
+        name,
+        email,
+        avatar: (req.file) ? req.file.path : avatar
+    }, {
+        where: {
+            id: req.params.id
+        },
+        attributes: ['id', 'name', 'email', 'avatar']
+    })
+    .then(result => {
+        res.send({
+            status: 'success',
+            result
+        });
+    })
+    .catch(e => {
+        res.send({
+            status: 'error',
+            message: 'Error: failed to edit profile',
+            error: e
+        });
+    });
 }

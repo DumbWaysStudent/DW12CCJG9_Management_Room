@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, AsyncStorage } from 'react-native';
+import { View, AsyncStorage, RefreshControl } from 'react-native';
 import * as actionCustomer from './../redux/actions/actionCustomer';
 import { Layout, Text, Input, Button, Spinner, Avatar } from 'react-native-ui-kitten';
 import { Fab, Card, Toast } from 'native-base';
@@ -22,9 +22,11 @@ class Customer extends Component {
       inputPhoneNum: '',
       inputAvatar: null,
       editModalId: 0,
-      avatar: {uri: 'https://i1.wp.com/kiryuu.co/wp-content/uploads/2019/09/Kiryuu-Sampul.png'},
+      avatar: { uri: 'https://i1.wp.com/kiryuu.co/wp-content/uploads/2019/09/Kiryuu-Sampul.png' },
       signInData: null,
       onDelete: false,
+      searchFilterData: [],
+      searchStatus: false
     };
 
     AsyncStorage.getItem('signInData', (e, result) => {
@@ -36,21 +38,7 @@ class Customer extends Component {
             signInData: result
           });
 
-          this.props.handleGetCustomers({
-            token: result.token
-          })
-          .then(() => {
-            if (this.props.localCustomers.customers.hasOwnProperty('status')) {
-              if (this.props.localCustomers.customers.status == 'error') {
-                Toast.show({
-                  text: "Error: Can't Load Data, please check your internet connection and try again",
-                  textStyle: { fontSize: 12, fontWeight: 'bold' },
-                  duration: 2000,
-                  style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-                });
-              }
-            }
-          })
+          this.loadData(result.token);
         }
       }
     });
@@ -85,7 +73,7 @@ class Customer extends Component {
         }
 
         this.setState({
-          inputAvatar : source,
+          inputAvatar: source,
         })
       }
     })
@@ -112,14 +100,18 @@ class Customer extends Component {
         },
         token: this.state.signInData.token
       })
-      .then(() => {
-        this.setState({
-          addCustomerModalDisplay: false,
-          inputCustomerName: '',
-          inputIdNum: '',
-          inputPhoneNum: '',
-          inputAvatar: null
+        .then(() => {
+          this.setState({
+            addCustomerModalDisplay: false,
+            inputCustomerName: '',
+            inputIdNum: '',
+            inputPhoneNum: '',
+            inputAvatar: null
+          })
         })
+
+      this.setState({
+        addCustomerModalDisplay: false,
       })
     }
   }
@@ -145,15 +137,18 @@ class Customer extends Component {
         id: this.state.editModalId,
         token: this.state.signInData.token
       })
-      .then(() => {
+        .then(() => {
+          this.setState({
+            inputCustomerName: '',
+            inputIdNum: '',
+            inputPhoneNum: '',
+            inputAvatar: null
+          })
+        })
+
         this.setState({
           addCustomerModalDisplay: false,
-          inputCustomerName: '',
-          inputIdNum: '',
-          inputPhoneNum: '',
-          inputAvatar: null
         })
-      })
     }
   }
 
@@ -172,34 +167,89 @@ class Customer extends Component {
       id,
       token: this.state.signInData.token
     })
+
+    this.setState({
+      addCustomerModalDisplay: false,
+      inputCustomerName: '',
+      inputIdNum: '',
+      inputPhoneNum: '',
+      inputAvatar: null
+    });
+  }
+
+  loadData = (token) => {
+    this.props.handleGetCustomers({
+      token
+    })
       .then(() => {
+        if (this.props.localCustomers.customers.hasOwnProperty('status')) {
+          if (this.props.localCustomers.customers.status == 'error') {
+            Toast.show({
+              text: this.props.localCustomers.customers.message,
+              textStyle: { fontSize: 12, fontWeight: 'bold' },
+              duration: 2000,
+              style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+            });
+          }
+        }
+      })
+      .catch(() => {
         Toast.show({
-          text: `Success: Customer Deleted`,
+          text: "Error: Can't load data, please check your internet connection and try again.",
           textStyle: { fontSize: 12, fontWeight: 'bold' },
           duration: 2000,
-          style: { backgroundColor: '#00cc00', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-        });
-
-        this.setState({
-          addCustomerModalDisplay: false,
-          inputCustomerName: '',
-          inputIdNum: '',
-          inputPhoneNum: '',
-          inputAvatar: null
+          style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
         });
       })
+  }
+
+  searchFilter(text) {
+    console.log(text)
+    if (text != '') {
+      this.setState({
+        searchStatus: true
+      })
+    } else {
+      this.setState({
+        searchStatus: false
+      })
+    }
+    const newData = this.props.localCustomers.customers.filter(item => {
+      const itemData = `${item.name.toUpperCase()}`
+
+      const textData = text.toUpperCase();
+      console.log(itemData.indexOf(textData))
+      return itemData.indexOf(textData) > -1;
+    });
+
+    this.setState({
+      searchFilterData: newData
+    })
+  }
+
+  renderSearchIcon = () => {
+    return (
+      <Icon size={19} name="search" />
+    );
   }
 
   render() {
     return (
       <Layout style={styles.container}>
-        <Modal
+        <Layout style={styles.searchBar}>
+          <Input
+          onChangeText={text => this.searchFilter(text)}
+          icon={this.renderSearchIcon}
+          placeholder="Search Customer...."
+          size="small" />
+        </Layout>
+        {/* <Modal
           isVisible={this.props.localCustomers.isLoading}
           backdropOpacity={0.3}>
           <View style={{ flex: 1, position: 'absolute', top: 220, right: 140 }}>
             <Spinner />
           </View>
-        </Modal>
+        </Modal> */}
         <Modal
           isVisible={this.state.addCustomerModalDisplay}
           onBackButtonPress={() => this.setState({
@@ -241,7 +291,7 @@ class Customer extends Component {
                 />
 
                 <View style={{ margin: 8, flexDirection: 'row' }}>
-                  <Avatar style={styles.customerListAvatar} source={(this.state.inputAvatar != null) ? {uri: this.state.inputAvatar.uri} : this.state.avatar} /> 
+                  <Avatar style={styles.customerListAvatar} source={(this.state.inputAvatar != null) ? { uri: this.state.inputAvatar.uri } : this.state.avatar} />
                   <Icon name="camera" size={20} onPress={() => this.imagePickerHandler()} />
                 </View>
               </ScrollView>
@@ -303,7 +353,7 @@ class Customer extends Component {
                 />
 
                 <View style={{ margin: 8, flexDirection: 'row' }}>
-                <Avatar style={styles.customerListAvatar} source={this.state.profile_image} />
+                  <Avatar style={styles.customerListAvatar} source={{uri: `http://192.168.0.35:5000/${this.state.inputAvatar}`}} />
                   <Icon name="camera" size={20} />
                 </View>
               </ScrollView>
@@ -321,8 +371,10 @@ class Customer extends Component {
           </Layout>
         </Modal>
         <FlatGrid
+          refreshing={this.props.localCustomers.isLoading}
+          refreshControl={<RefreshControl colors={['#284de0']} refreshing={this.props.localCustomers.isLoading} onRefresh={() => this.loadData(this.state.signInData.token)} />}
           itemDimension={200}
-          items={this.props.localCustomers.customers}
+          items={ (this.state.searchStatus) ? this.state.searchFilterData : this.props.localCustomers.customers}
           renderItem={({ item }) =>
             <Card
               onTouchEndCapture={() => this.editValueSetter({
@@ -332,11 +384,11 @@ class Customer extends Component {
                 inputPhoneNum: item.phone_number,
                 inputAvatar: item.image
               })}
-              style={[styles.checkinGrid, styles.customerCard]}>
+              style={[styles.customerCard]}>
               {/* <Icon name="user-circle" size={50} style={{ marginVertical: 10, marginRight: 10 }} /> */}
-              <Avatar style={styles.customerListAvatar} source={{uri: `http://192.168.0.35:5000/${item.image}`}} />
+              <Avatar style={styles.customerListAvatar} source={{ uri: `http://192.168.0.35:5000/${item.image}` }} />
               <View style={styles.customerListInfo}>
-                <Text style={{fontWeight: 'bold'}}>{item.name}</Text>
+                <Text style={{ fontWeight: 'bold' }}>{item.name}</Text>
                 <Text>{item.identity_number}</Text>
                 <Text>{item.phone_number}</Text>
               </View>

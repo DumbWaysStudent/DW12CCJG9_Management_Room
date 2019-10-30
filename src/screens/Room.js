@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, AsyncStorage } from 'react-native';
+import { View, AsyncStorage, RefreshControl } from 'react-native';
 import { Layout, Text, Input, Button, Spinner } from 'react-native-ui-kitten';
 import { Fab, Toast } from 'native-base';
 import { connect } from 'react-redux'
@@ -21,7 +21,9 @@ class Room extends Component {
       editModalId: 0,
       onDelete: false,
       inputRoomName: '',
-      signInData: null
+      signInData: null,
+      searchFilterData: [],
+      searchStatus: false
     };
 
     AsyncStorage.getItem('signInData', (e, result) => {
@@ -33,9 +35,7 @@ class Room extends Component {
             signInData: result
           });
 
-          this.props.handleGetRooms({
-            token: result.token
-          });
+          this.loadData(result.token);
         }
       }
     });
@@ -54,14 +54,17 @@ class Room extends Component {
         name: this.state.inputRoomName,
         token: this.state.signInData.token
       })
-      .then(() => {
-        this.setState({
-          addRoomModalDisplay: false,
-          inputRoomName: '',
-          editModalValue: '',
-          editModalId: 0,
-        })
-      });
+        .then(() => {
+          this.setState({
+            inputRoomName: '',
+            editModalValue: '',
+            editModalId: 0,
+          })
+        });
+
+      this.setState({
+        addRoomModalDisplay: false,
+      })
     }
   }
 
@@ -76,13 +79,16 @@ class Room extends Component {
       name: this.state.editModalValue,
       token: this.state.signInData.token
     })
-    .then(() => {
-      this.setState({
-        editRoomModalDisplay: false,
-        inputRoomName: '',
-        editModalValue: '',
-        editModalId: 0,
+      .then(() => {
+        this.setState({
+          inputRoomName: '',
+          editModalValue: '',
+          editModalId: 0,
+        })
       })
+
+    this.setState({
+      editRoomModalDisplay: false,
     })
   }
 
@@ -96,33 +102,88 @@ class Room extends Component {
       id,
       token: this.state.signInData.token
     })
+
+    this.setState({
+      addCustomerModalDisplay: false,
+      inputRoomName: '',
+      editModalValue: '',
+      editModalId: 0,
+    });
+  }
+
+  loadData = (token) => {
+    this.props.handleGetRooms({
+      token: token
+    })
       .then(() => {
+        if (this.props.localRooms.rooms.hasOwnProperty('status')) {
+          if (this.props.localRooms.rooms.status == 'error') {
+            Toast.show({
+              text: this.props.localRooms.rooms.message,
+              textStyle: { fontSize: 12, fontWeight: 'bold' },
+              duration: 2000,
+              style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+            });
+          }
+        }
+      })
+      .catch((result) => {
         Toast.show({
-          text: `Success: Room Deleted`,
+          text: "Error: Can't load data, please check your internet connection and try again.",
           textStyle: { fontSize: 12, fontWeight: 'bold' },
           duration: 2000,
-          style: { backgroundColor: '#00b300', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-        });
-
-        this.setState({
-          addCustomerModalDisplay: false,
-          inputRoomName: '',
-          editModalValue: '',
-          editModalId: 0,
+          style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
         });
       })
+  }
+
+  searchFilter(text) {
+    console.log(text)
+    if (text != '') {
+      this.setState({
+        searchStatus: true
+      })
+    } else {
+      this.setState({
+        searchStatus: false
+      })
+    }
+    const newData = this.props.localRooms.rooms.filter(item => {
+      const itemData = `${item.name.toUpperCase()}`
+
+      const textData = text.toUpperCase();
+      console.log(itemData.indexOf(textData))
+      return itemData.indexOf(textData) > -1;
+    });
+
+    this.setState({
+      searchFilterData: newData
+    })
+  }
+
+  renderSearchIcon = () => {
+    return (
+      <Icon size={19} name="search" />
+    );
   }
 
   render() {
     return (
       <Layout style={[styles.container, styles.containerHome]}>
-        <Modal
+        <Layout style={styles.searchBar}>
+          <Input
+            onChangeText={text => this.searchFilter(text)}
+            icon={this.renderSearchIcon}
+            placeholder="Search Room...."
+            size="small" />
+        </Layout>
+        {/* <Modal
           isVisible={this.props.localRooms.isLoading}
           backdropOpacity={0.3}>
           <View style={{ flex: 1, position: 'absolute', top: 220, right: 140 }}>
             <Spinner />
           </View>
-        </Modal>
+        </Modal> */}
         <Modal
           isVisible={this.state.addRoomModalDisplay}
           onBackButtonPress={() => this.setState({ addRoomModalDisplay: false })}
@@ -168,13 +229,17 @@ class Room extends Component {
           </Layout>
         </Modal>
         <FlatGrid
-          itemDimension={110}
-          items={this.props.localRooms.rooms}
+          refreshing={this.props.localRooms.isLoading}
+          refreshControl={<RefreshControl colors={['#284de0']} refreshing={this.props.localRooms.isLoading} onRefresh={() => this.loadData(this.state.signInData.token)} />}
+          itemDimension={100}
+          items={ (this.state.searchStatus) ? this.state.searchFilterData : this.props.localRooms.rooms}
           renderItem={({ item }) =>
-            <View style={styles.checkinGrid} onTouchEndCapture={() => this.editRoomValueSetter({
-              editModalValue: item.name,
-              editModalId: item.id
-            })}><Text style={styles.gridText}>{item.name}</Text></View>
+            <View style={styles.checkinGrid}><Text
+              style={styles.gridText}
+              onPress={() => this.editRoomValueSetter({
+                editModalValue: item.name,
+                editModalId: item.id
+              })}>{item.name}</Text></View>
           }
         />
         <Fab
