@@ -119,14 +119,14 @@ class CheckIn extends Component {
       let timeLeft = ''
       let matches = null;
 
-      timeLeft = moment(new Date(order_end_time)).fromNow();
-      matches = moment(new Date(order_end_time)).fromNow().match(/(\d+)/g);
+      timeLeft = moment(new Date(order_end_time)).diff(moment(), 'minute');
+      // matches = moment(new Date(order_end_time)).fromNow().match(/(\d+)/g);
 
-      if (matches !== null && timeLeft.search('ago') === -1) {
-        timeLeft = matches[0];
-      } else {
-        timeLeft = '0';
-      }
+      // if (matches !== null && timeLeft.search('ago') === -1) {
+      //   timeLeft = matches[0];
+      // } else {
+      //   timeLeft = '0';
+      // }
       // console.log(timeLeft);
 
       if (timeLeft == '0') {
@@ -157,6 +157,12 @@ class CheckIn extends Component {
   }
 
   editValueSetter = (params, modalDisplay) => {
+    if (params.hasOwnProperty('customerPicker') && params.customerPicker === null) {
+      if (this.props.localCustomers.customers != false) {
+        params.customerPicker = this.props.localCustomers.customers[0].id
+      }
+    }
+
     params.addCheckInDisplay = modalDisplay;
     this.setState(params);
   }
@@ -222,7 +228,7 @@ class CheckIn extends Component {
           });
         } else {
           this.setState({
-            interval: setInterval(this.setCheckOutTimer, 1000)
+            interval: setInterval(this.setCheckOutTimer, 3000)
           })
         }
       })
@@ -231,7 +237,7 @@ class CheckIn extends Component {
   durationSetter = (data, dataToCompare) => {
     let index = data.findIndex(x => x.room_id == dataToCompare.id);
     if (index !== -1) {
-      return (data[index].duration - 1).toString();
+      return (data[index].duration + 1).toString();
     } else {
       return '0';
     }
@@ -241,18 +247,9 @@ class CheckIn extends Component {
     let matches, durationLeft;
     let index = data.findIndex(x => x.room_id == dataToCompare.id);
     if (index !== -1) {
-      durationLeft = moment(new Date(data[index].order_end_time)).fromNow();
-      matches = durationLeft.match(/(\d+)/g);
-      if (matches !== null) {
-        if (durationLeft.search('ago') === -1) {
-
-          return (Number.parseInt(matches[0]) - 1).toString();
-        } else {
-          return '0';
-        }
-      } else {
-        return '0';
-      }
+      durationLeft = moment(new Date(data[index].order_end_time)).diff(moment(), 'minute');
+      // matches = durationLeft.match(/(\d+)/g);
+      return durationLeft.toString()
     } else {
       return '0';
     }
@@ -284,7 +281,7 @@ class CheckIn extends Component {
                     }
                   } else {
                     this.setState({
-                      interval: setInterval(this.setCheckOutTimer, 1000),
+                      interval: setInterval(this.setCheckOutTimer, 3000),
                       customerPicker: (this.props.localCustomers.customers != false) ? this.props.localCustomers.customers[0].id : null
                     })
                   }
@@ -326,7 +323,6 @@ class CheckIn extends Component {
   }
 
   searchFilter(text) {
-    console.log(text)
     if (text != '') {
       this.setState({
         searchStatus: true
@@ -339,8 +335,8 @@ class CheckIn extends Component {
     const newData = this.props.localRooms.rooms.filter(item => {
       const itemData = `${item.name.toUpperCase()}`
 
-      const textData = text.toUpperCase();
-      console.log(itemData.indexOf(textData))
+      const textData = text.toUpperCase()
+      
       return itemData.indexOf(textData) > -1;
     });
 
@@ -421,7 +417,7 @@ class CheckIn extends Component {
                   if (this.state.bookedStatus) {
                     this.setState({
                       addCheckInDisplay: false,
-                      interval: setInterval(this.setCheckOutTimer, 1000)
+                      interval: setInterval(this.setCheckOutTimer, 3000)
                     })
                   } else {
                     this.setState({
@@ -446,16 +442,20 @@ class CheckIn extends Component {
                   ? [styles.checkinGrid, styles.isBookedTrue]
                   : [styles.checkinGrid, styles.isBookedFalse])
                 : [styles.checkinGrid, styles.isBookedFalse])}>
-              <Text
-                style={styles.gridText}
-                onPress={() => this.editValueSetter({
-                  inputRoomName: item.name,
-                  inputDuration: '',
-                  roomID: item.id,
-                  customerPicker: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].customer_id : this.state.customerPicker,
-                  durationLeft: this.durationLeftSetter(this.props.localOrders.orders, item),
-                  bookedStatus: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].is_booked : false
-                }, true)}>{item.name}</Text>
+              <Text style={((this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1)
+                ? (this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].is_booked
+                  ? [styles.gridTextName, styles.gridTextNameIsBookedTrue]
+                  : [styles.gridTextName, styles.gridTextNameIsBookedFalse])
+                : [styles.gridTextName, styles.gridTextNameIsBookedFalse])}>{item.name}</Text>
+              <Text style={styles.gridText}
+              onPress={() => this.editValueSetter({
+                inputRoomName: item.name,
+                inputDuration: '',
+                roomID: item.id,
+                customerPicker: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].customer_id : this.state.customerPicker,
+                durationLeft: this.durationLeftSetter(this.props.localOrders.orders, item),
+                bookedStatus: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].is_booked : false
+              }, true)}>{(this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? moment(new Date(this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].order_end_time)).diff(moment(), 'minute') + ' minute left' : 'Avaible'}</Text>
             </View>
           }
         />

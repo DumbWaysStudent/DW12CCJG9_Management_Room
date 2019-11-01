@@ -94,7 +94,8 @@ class Settings extends Component {
     let formData = new FormData();
     formData.append('name', this.state.inputName);
     formData.append('email', this.state.inputEmail);
-    formData.append('avatar', (this.state.imagePic != null) ? this.state.imagePic : this.state.avatar);
+    formData.append('prevPic', this.props.localProfile.profile.avatar);
+    formData.append('avatar_profile', (this.state.imagePic != null) ? this.state.imagePic : this.state.avatar);
 
     this.props.handleUpdateProfile({
       id: this.props.localProfile.profile.id,
@@ -253,7 +254,7 @@ class Settings extends Component {
                 onChangeText={(text) => this.setState({ inputName: text })}
                 value={this.state.inputName} />
               <Button
-                onPress={() => this.imagePickerHandler()}
+                onPress={() => this.saveEditModal()}
                 style={styles.editSaveBtn}>
                 Save
                 </Button>

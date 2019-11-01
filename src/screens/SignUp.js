@@ -23,7 +23,7 @@ class SignUp extends Component {
   handleSignIn = () => {
     const verify = this.verifyInput({
       username: this.state.inputUsername,
-      password:  this.state.inputPassword,
+      password: this.state.inputPassword,
       fullName: this.state.inputFullName,
       email: this.state.inputEmail
     });
@@ -43,7 +43,11 @@ class SignUp extends Component {
         .then(result => {
           if (result.data.status == 'error') {
             this.setState({ isLoading: false });
-            alert(result.data.message);
+            Toast.show({
+              text: result.data.message,
+              duration: 1000,
+              style: styles.signIntoastError
+            });
           } else {
             AsyncStorage
               .setItem('signInData', JSON.stringify(result.data))
@@ -53,18 +57,30 @@ class SignUp extends Component {
               })
               .catch(e => {
                 this.setState({ isLoading: false });
-                alert('Error Async: cannot sign in');
+                Toast.show({
+                  text: 'Error: cannot sign up',
+                  duration: 1000,
+                  style: styles.signIntoastError
+                });
               })
           }
         })
         .catch(e => {
           this.setState({ isLoading: false });
           console.log(e);
-          alert('Error: cannot sign in');
+          Toast.show({
+            text: 'Error: cannot sign up',
+            duration: 1000,
+            style: styles.signIntoastError
+          });
         })
     } else {
       this.setState({ isLoading: false });
-      alert(verify.message);
+      Toast.show({
+        text: verify.message,
+        duration: 1000,
+        style: styles.signIntoastError
+      });
     }
   }
 

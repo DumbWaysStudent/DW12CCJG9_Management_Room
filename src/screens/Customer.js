@@ -23,6 +23,7 @@ class Customer extends Component {
       inputAvatar: null,
       editModalId: 0,
       avatar: { uri: 'https://i1.wp.com/kiryuu.co/wp-content/uploads/2019/09/Kiryuu-Sampul.png' },
+      prevPic: '',
       signInData: null,
       onDelete: false,
       searchFilterData: [],
@@ -87,13 +88,13 @@ class Customer extends Component {
         text: "Error: All Field Except Photos Cannot Be Empty!",
         textStyle: { fontSize: 12, fontWeight: 'bold' },
         duration: 2000,
-        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+        style: styles.errorToast
       });
     } else {
       formData.append('name', inputCustomerName);
       formData.append('identity_number', inputIdNum);
       formData.append('phone_number', inputPhoneNum);
-      formData.append('avatar', inputAvatar);
+      formData.append('avatar_customer', inputAvatar);
       this.props.handleAddCustomer({
         data: {
           formData
@@ -117,22 +118,25 @@ class Customer extends Component {
   }
 
   editCustomer = () => {
-    const { inputCustomerName, inputIdNum, inputPhoneNum, avatar } = this.state;
-
+    const { inputCustomerName, inputIdNum, inputPhoneNum, inputAvatar } = this.state;
     if (inputCustomerName == '' && inputIdNum == '' && inputPhoneNum == '') {
       Toast.show({
         text: "Error: All Field Except Photos Cannot Be Empty!",
         textStyle: { fontSize: 12, fontWeight: 'bold' },
         duration: 2000,
-        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+        style: styles.errorToast
       });
     } else {
+      let formData = new FormData();
+
+      formData.append('name', inputCustomerName);
+      formData.append('identity_number', inputIdNum);
+      formData.append('phone_number', inputPhoneNum);
+      formData.append('prevPic', this.state.prevPic);
+      formData.append('avatar_customer', inputAvatar);
       this.props.handleUpdateCustomer({
         data: {
-          name: this.state.inputCustomerName,
-          identity_number: this.state.inputIdNum,
-          phone_number: this.state.inputPhoneNum,
-          avatar: this.state.avatar
+          formData
         },
         id: this.state.editModalId,
         token: this.state.signInData.token
@@ -146,9 +150,9 @@ class Customer extends Component {
           })
         })
 
-        this.setState({
-          addCustomerModalDisplay: false,
-        })
+      this.setState({
+        editCustomerModalDisplay: false,
+      })
     }
   }
 
@@ -165,7 +169,8 @@ class Customer extends Component {
 
     this.props.handleDeleteCustomer({
       id,
-      token: this.state.signInData.token
+      token: this.state.signInData.token,
+      prevPic: this.state.inputAvatar
     })
 
     this.setState({
@@ -188,7 +193,7 @@ class Customer extends Component {
               text: this.props.localCustomers.customers.message,
               textStyle: { fontSize: 12, fontWeight: 'bold' },
               duration: 2000,
-              style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+              style: styles.errorToast
             });
           }
         }
@@ -198,7 +203,7 @@ class Customer extends Component {
           text: "Error: Can't load data, please check your internet connection and try again.",
           textStyle: { fontSize: 12, fontWeight: 'bold' },
           duration: 2000,
-          style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+          style: styles.errorToast
         });
       })
   }
@@ -238,10 +243,10 @@ class Customer extends Component {
       <Layout style={styles.container}>
         <Layout style={styles.searchBar}>
           <Input
-          onChangeText={text => this.searchFilter(text)}
-          icon={this.renderSearchIcon}
-          placeholder="Search Customer...."
-          size="small" />
+            onChangeText={text => this.searchFilter(text)}
+            icon={this.renderSearchIcon}
+            placeholder="Search Customer...."
+            size="small" />
         </Layout>
         {/* <Modal
           isVisible={this.props.localCustomers.isLoading}
@@ -301,7 +306,6 @@ class Customer extends Component {
                   inputCustomerName: '',
                   inputIdNum: '',
                   inputPhoneNum: '',
-
                   inputAvatar: null
                 })} style={styles.modalBoxBtn}>Cancel</Button>
                 <Button onPress={() => this.addCustomer()} style={styles.modalBoxBtn}>Save</Button>
@@ -353,8 +357,8 @@ class Customer extends Component {
                 />
 
                 <View style={{ margin: 8, flexDirection: 'row' }}>
-                  <Avatar style={styles.customerListAvatar} source={{uri: `http://192.168.0.35:5000/${this.state.inputAvatar}`}} />
-                  <Icon name="camera" size={20} />
+                  <Avatar style={styles.customerListAvatar} source={(this.state.inputAvatar !== null && this.state.inputAvatar.hasOwnProperty('uri') == true) ? { uri: this.state.inputAvatar.uri } : { uri: `http://192.168.0.35:5000/${this.state.inputAvatar}` }} />
+                  <Icon name="camera" size={20} onPress={() => this.imagePickerHandler()} />
                 </View>
               </ScrollView>
               <View style={styles.modalBoxBtnContainer}>
@@ -374,7 +378,7 @@ class Customer extends Component {
           refreshing={this.props.localCustomers.isLoading}
           refreshControl={<RefreshControl colors={['#284de0']} refreshing={this.props.localCustomers.isLoading} onRefresh={() => this.loadData(this.state.signInData.token)} />}
           itemDimension={200}
-          items={ (this.state.searchStatus) ? this.state.searchFilterData : this.props.localCustomers.customers}
+          items={(this.state.searchStatus) ? this.state.searchFilterData : this.props.localCustomers.customers}
           renderItem={({ item }) =>
             <Card
               onTouchEndCapture={() => this.editValueSetter({
@@ -382,7 +386,8 @@ class Customer extends Component {
                 inputCustomerName: item.name,
                 inputIdNum: item.identity_number,
                 inputPhoneNum: item.phone_number,
-                inputAvatar: item.image
+                inputAvatar: item.image,
+                prevPic: item.image
               })}
               style={[styles.customerCard]}>
               {/* <Icon name="user-circle" size={50} style={{ marginVertical: 10, marginRight: 10 }} /> */}
@@ -398,7 +403,13 @@ class Customer extends Component {
         <Fab
           style={{ backgroundColor: '#ffffff', position: 'relative' }}
           position="bottomRight"
-          onPress={() => this.setState({ addCustomerModalDisplay: true })}>
+          onPress={() => this.setState({
+            addCustomerModalDisplay: true,
+            inputCustomerName: '',
+            inputIdNum: '',
+            inputPhoneNum: '',
+            inputAvatar: this.state.avatar
+          })}>
           <Icon name="plus" style={{ color: "#284de0" }} />
         </Fab>
       </Layout>

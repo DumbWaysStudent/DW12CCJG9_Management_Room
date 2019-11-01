@@ -1,5 +1,6 @@
 const models = require('../models');
 const Customer = models.customer;
+const fs = require('fs');
 
 exports.getCustomers = (req, res) => {
     Customer
@@ -23,18 +24,18 @@ exports.addCustomer = (req, res) => {
         .then((result) => {
             if (!result) {
                 Customer
-                .create({
-                    name,
-                    identity_number,
-                    phone_number,
-                    image: req.file.path
-                })
-                .then(result => {
-                    res.send(result);
-                })
-                .catch(e => {
-                    throw e;
-                });
+                    .create({
+                        name,
+                        identity_number,
+                        phone_number,
+                        image: req.file.path
+                    })
+                    .then(result => {
+                        res.send(result);
+                    })
+                    .catch(e => {
+                        throw e;
+                    });
             } else {
                 res.send({
                     status: 'error',
@@ -53,18 +54,24 @@ exports.addCustomer = (req, res) => {
 }
 
 exports.updateCustomer = (req, res) => {
+    const { name, identity_number, phone_number } = req.body;
     Customer
-        .update(req.body, {
+        .update({
+            id: req.params.id,
+            name,
+            identity_number,
+            phone_number,
+            image: req.file.path
+        }, {
             where: { id: req.params.id }
         })
         .then(result => {
-            const { name, identity_number, phone_number, image } = req.body;
             res.send({
                 id: req.params.id,
                 name,
                 identity_number,
                 phone_number,
-                image
+                image: req.file.path
             })
         })
         .catch(e => {
@@ -77,6 +84,17 @@ exports.updateCustomer = (req, res) => {
 }
 
 exports.deleteCustomer = (req, res) => {
+    fs.exists(req.body.prevPic, (exists) => {
+        if (exists) {
+            fs.unlink(req.body.prevPic, (err) => {
+                if (err) throw err;
+                console.log('image deleted');
+            })
+        } else {
+            console.log(req.body.prevPic)
+        }
+    });
+    
     Customer
         .destroy({ where: { id: req.params.id } })
         .then(result => {

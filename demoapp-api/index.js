@@ -29,7 +29,7 @@ app.group('/api/v2/', (router) => {
     router.post('/login', UserController.login);
     router.post('/register', UserController.register);
     router.get('/profile/:id', authenticated, UserController.getProfile);
-    router.post('/profile/:id', authenticated, upload.single('avatar'), UserController.updateProfile);
+    router.post('/profile/:id', authenticated, upload.single('avatar_profile'), UserController.updateProfile);
 
     // ---------- Room ----------//
     router.get('/rooms', authenticated, RoomController.getRooms);
@@ -40,8 +40,8 @@ app.group('/api/v2/', (router) => {
 
     // ---------- Customer ----------//
     router.get('/customers', authenticated, CustomerController.getCustomers);
-    router.post('/customer', authenticated, upload.single('avatar'), CustomerController.addCustomer);
-    router.put('/customer/:id', authenticated, CustomerController.updateCustomer);
+    router.post('/customer', authenticated, upload.single('avatar_customer'), CustomerController.addCustomer);
+    router.put('/customer/:id', authenticated, upload.single('avatar_customer'), CustomerController.updateCustomer);
     router.delete('/customer/:id', authenticated, CustomerController.deleteCustomer);
 
     // ---------- Orders ------------//

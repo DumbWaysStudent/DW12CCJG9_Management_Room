@@ -36,7 +36,7 @@ class SignIn extends Component {
                 Toast.show({
                     text: result.data.message,
                     duration: 1000,
-                    style: {backgroundColor: '#ff3333'}
+                    style: styles.signIntoastError
                 });
             } else {
               AsyncStorage
@@ -50,7 +50,7 @@ class SignIn extends Component {
                   Toast.show({
                     text: 'Error: cannot sign in',
                     duration: 1000,
-                    style: {backgroundColor: '#ff3333'}
+                    style: styles.signIntoastError
                 });
               })
             }
@@ -60,7 +60,7 @@ class SignIn extends Component {
             Toast.show({
                 text: 'Error: cannot sign in',
                 duration: 1000,
-                style: {backgroundColor: '#ff3333'}
+                style: styles.signIntoastError
             });
         }) 
       } else {
@@ -69,7 +69,7 @@ class SignIn extends Component {
                 text: verify.message,
                 textStyle: { fontSize: 12, fontWeight: 'bold' },
                 duration: 1000,
-                style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+                style: styles.signIntoastError
             });
       }
   }

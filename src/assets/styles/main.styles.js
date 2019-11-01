@@ -48,28 +48,63 @@ export default StyleSheet.create({
         borderBottomColor: '#eee',
         padding: 6
     },
+    errorToast: {
+        backgroundColor: '#ff3333', 
+        marginHorizontal: 5, 
+        marginBottom: 70, 
+        borderRadius: 5
+    },
+    signIntoastError: {
+        backgroundColor: '#ff3333', 
+        marginHorizontal: 5, 
+        marginBottom: 5, 
+        borderRadius: 5
+    },
 
     // Checkin
     checkinGrid: {
         borderWidth: 1,
         borderColor: '#eee',
-        borderRadius: 3,
+        borderRadius: 5,
         width: 100,
-        height: 80
+        height: 80,
+        backgroundColor: '#284de0'
         // paddingVertical: 80 / 3,
         // paddingHorizontal: 40
     },
-    gridText: {
-        width: '100%', 
-        height: '100%', 
+    gridTextName: {
+        backgroundColor: '#15551e',
+        // flex: 1,
+        width: '60%', 
+        // height: '100%',
+        alignSelf: 'center',
+        borderBottomLeftRadius: 5,
+        borderBottomRightRadius: 5,
         textAlign: 'center', 
-        textAlignVertical: 'center'
+        textAlignVertical: 'center',
+        color: "#fff",
+        fontWeight: 'bold'
+    },
+    gridText: {
+        width: '100%',
+        height: '100%',
+        textAlign: 'center', 
+        textAlignVertical: 'center',
+        fontSize: 12,
+        color: "#fff",
+        fontWeight: 'bold'
+    },
+    gridTextNameIsBookedTrue: {
+        backgroundColor: '#444',
+    },
+    gridTextNameIsBookedFalse: {
+        backgroundColor: '#15551e',
     },
     isBookedTrue: {
-        backgroundColor: 'grey',
+        backgroundColor: '#656e65',
     },
     isBookedFalse: {
-        backgroundColor: 'green',
+        backgroundColor: '#17751e',
     },
     modalBox: {
         width: '100%',

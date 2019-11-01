@@ -30,7 +30,7 @@ export const handleUpdateCustomer = (params) => ({
     payload: axios({
         method: 'put',
         url: `${API_URL}/customer/${params.id}`,
-        data: params.data,
+        data: params.data.formData,
         headers: {
             Authorization: params.token
         }
@@ -42,6 +42,9 @@ export const handleDeleteRoom = (params) => ({
     payload: axios({
         method: 'delete',
         url: `${API_URL}/customer/${params.id}`,
+        data: {
+            prevPic: params.prevPic
+        },
         headers: {
             Authorization: params.token
         }
