@@ -1,0 +1,10 @@
+* ---------------------------------------------------------------------------------
+* Ganti react-native-modal dengan library lain
+* Tambahkan Search Bar di Screen Check In, Room, dan User
+* Tambahkan Histori Aplikasi pada Screen Settings
+* Tambahkan Table History
+* Tambahkan field created_by pada semua tabel kecuali user dan history
+* Ubah UI Frontend > Home
+* Tambahkan Opsi Edit Profile pada halaman Settings
+* Add Duplicate Condition in Edit Room
+* ---------------------------------------------------------------------------------- 

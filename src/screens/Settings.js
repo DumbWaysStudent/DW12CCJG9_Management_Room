@@ -10,6 +10,8 @@ import { Fab, Card } from 'native-base';
 import { connect } from 'react-redux'
 import Modal from 'react-native-modal';
 import { ScrollView } from 'react-native-gesture-handler';
+// import auth from '@react-native-firebase/auth';
+// import { firebase } from '@react-native-firebase/storage';
 
 
 class Settings extends Component {
@@ -24,7 +26,8 @@ class Settings extends Component {
       editProfileModal: false,
       inputName: '',
       inputEmail: '',
-      uploadImage: false
+      uploadImage: false,
+      isUploadLoading: false
     };
 
     AsyncStorage.getItem('signInData', (e, result) => {
@@ -35,6 +38,8 @@ class Settings extends Component {
           this.setState({
             signInData: result
           });
+
+          // console.log(this.state.signInData.id)
 
           this.loadData(result.token);
         }
@@ -67,7 +72,8 @@ class Settings extends Component {
         const source = {
           uri: response.uri,
           type: response.type,
-          name: response.fileName
+          name: response.fileName,
+          path: response.path
         }
 
         this.setState({
@@ -140,7 +146,7 @@ class Settings extends Component {
 
   loadData = (token) => {
     this.props.handleGetProfile({
-      id: this.props.localProfile.profile.id,
+      id: (this.props.localProfile.profile != false) ? this.props.localProfile.profile.id : this.state.signInData.id,
       token
     })
       .then(() => {
@@ -164,6 +170,7 @@ class Settings extends Component {
         }
       })
       .catch((result) => {
+        console.log(result)
         Toast.show({
           text: "Error: Can't load data, please check your internet connection and try again.",
           textStyle: { fontSize: 12, fontWeight: 'bold' },
@@ -172,6 +179,44 @@ class Settings extends Component {
         });
       })
   }
+
+  // uploadImage = () => {
+  //   if (firebase.apps == false) {
+  //     firebase.initializeApp({
+  //       projectId: 'smoketoon-bc62e',
+  //       apiKey: 'AIzaSyAJSCIPKQwifPAV3ygqKWeE8HP0IJFgnmI',
+  //       appId: '1:1061969525441:android:12299dce435407e61db240',
+  //       databaseURL: 'https://smoketoon-bc62e.firebaseio.com',
+  //       storageBucket: 'smoketoon-bc62e.appspot.com',
+  //       messagingSenderId: '1061969525441'
+  //     });
+  //   }
+
+  //   console.log(firebase.apps)
+
+  //   this.setState({ isUploadLoading: true, editProfileModal: false })
+  //   firebase
+  //   .auth().signInWithEmailAndPassword('smoketoon@gmail.com', '123456')
+  //   .then(result => {
+  //     firebase
+  //     .app()
+  //     .storage()
+  //     .ref(`public/${result.user.uid}/profile-image.png`)
+  //     .putFile(this.state.imagePic.path)
+  //     .then(result => {
+  //       this.setState({ isUploadLoading: false })
+  //       console.log(result)
+  //     })
+  //     .catch(err => {
+  //       this.setState({ isUploadLoading: false })
+  //       console.log(err)
+  //     })
+  //   })
+  //   .catch(err => {
+  //     this.setState({ isUploadLoading: false })
+  //     console.log(err)
+  //   })
+  // }
 
   render() {
     return (
@@ -208,7 +253,7 @@ class Settings extends Component {
                 onChangeText={(text) => this.setState({ inputName: text })}
                 value={this.state.inputName} />
               <Button
-                onPress={() => this.saveEditModal()}
+                onPress={() => this.imagePickerHandler()}
                 style={styles.editSaveBtn}>
                 Save
                 </Button>
@@ -216,8 +261,8 @@ class Settings extends Component {
           </View>
         </Modal>
         <ScrollView
-        refreshing={this.props.localProfile.isLoading}
-        refreshControl={<RefreshControl colors={['#284de0']} refreshing={this.props.localProfile.isLoading} onRefresh={() => this.loadData(this.state.signInData.token)} />}>
+        refreshing={this.props.localProfile.isLoading || this.state.isUploadLoading}
+        refreshControl={<RefreshControl colors={['#284de0']} refreshing={this.props.localProfile.isLoading || this.state.isUploadLoading} onRefresh={() => this.loadData(this.state.signInData.token)} />}>
           <Layout level="1" style={{ flexDirection: 'row', padding: 10 }}>
             <Avatar style={styles.customerListAvatar} source={(this.state.avatar != 'default-pic' || this.state.avatar != null) ? { uri: `http://192.168.0.35:5000/${this.state.avatar}` } : require('./../assets/images/profile-picture-default.png')} />
             <Icon name="edit" size={20} style={{ position: 'absolute', right: 0, margin: 8 }} onPress={() => this.setState({ editProfileModal: true })} />

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1061969525441",
+    "firebase_url": "https://smoketoon-bc62e.firebaseio.com",
+    "project_id": "smoketoon-bc62e",
+    "storage_bucket": "smoketoon-bc62e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1061969525441:android:12299dce435407e61db240",
+        "android_client_info": {
+          "package_name": "com.reactapptest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1061969525441-nh0murqkikb4dno56ki5i0p8aa8tbjvt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJSCIPKQwifPAV3ygqKWeE8HP0IJFgnmI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1061969525441-nh0murqkikb4dno56ki5i0p8aa8tbjvt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
