@@ -48,11 +48,16 @@ export default StyleSheet.create({
         borderBottomColor: '#eee',
         padding: 6
     },
-    errorToast: {
-        backgroundColor: '#ff3333', 
+    toastStyle: {
         marginHorizontal: 5, 
         marginBottom: 70, 
         borderRadius: 5
+    },
+    errorToast: {
+        backgroundColor: '#ff3333'
+    },
+    successToast: {
+        backgroundColor: '#2ab325'
     },
     signIntoastError: {
         backgroundColor: '#ff3333', 
@@ -75,7 +80,8 @@ export default StyleSheet.create({
     gridTextName: {
         backgroundColor: '#15551e',
         // flex: 1,
-        width: '60%', 
+        width: '80%',
+        padding: 2, 
         // height: '100%',
         alignSelf: 'center',
         borderBottomLeftRadius: 5,
@@ -93,6 +99,16 @@ export default StyleSheet.create({
         fontSize: 12,
         color: "#fff",
         fontWeight: 'bold'
+    },
+    gridRoomText: {
+        fontSize: 15,
+        backgroundColor: '#233da6',
+        alignSelf: 'center',
+        borderBottomLeftRadius: 5,
+        borderBottomRightRadius: 5,
+        padding: 2,
+        width: '80%',
+        height: '31%'
     },
     gridTextNameIsBookedTrue: {
         backgroundColor: '#444',
@@ -190,7 +206,7 @@ export default StyleSheet.create({
         fontWeight: 'bold'
     },
     profileItem: {
-        marginTop: 15,
+        marginTop: 100,
         marginHorizontal: 7
     },
     editProfile: {
