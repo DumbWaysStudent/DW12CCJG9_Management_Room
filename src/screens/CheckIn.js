@@ -46,7 +46,7 @@ class CheckIn extends Component {
           // if (this.props.localOrders.isSuccess) {
           //   this.setState({
           //     signInData: result,
-          //     customerPicker: this.props.localOrders.orders[0].customerOrder.id
+          //     customerPicker: this.props.localOrders.orders.result[0].customerOrder.id
           //   })
           // }
           // })
@@ -72,50 +72,9 @@ class CheckIn extends Component {
     });
   }
 
-  // checkAndSetOED = () => {
-  //   const data = this.props.localOrders.orders;
-  //   const oedData = [];
-
-  //   data.map((o) => {
-  //     if (data != false) {
-  //       if (data.hasOwnProperty('order_end_time')) {
-  //         oedData.push({
-  //           id: o.id,
-  //           duration: o.duration,
-  //           order_end_time: o.order_end_time
-  //         });
-  //       }
-  //     }
-  //   });
-
-  //   this.setState({
-  //     orders_end_time: oedData
-  //   });
-  // }
-
-  // setCheckOutTimerData = () => {
-  //   const data = this.props.localOrders.orders;
-  //   let timeLeft = '';
-  //   let matches = null;
-  //   let oedData = [];
-  //   data.map((o) => {
-  //     if (data != false) {
-  //       oedData.push({
-  //         id: o.id,
-  //         order_end_time: o.order_end_time
-  //       });
-  //     }
-  //   });
-
-  //   oedData = oedData.sort();
-  //   this.setState({
-  //     currentIntervalItem: oedData
-  //   });
-  // }
-
   setCheckOutTimer = () => {
-    if (this.props.localOrders.orders != false) {
-      let order_end_time = this.props.localOrders.orders[0].order_end_time;
+    if (this.props.localOrders.orders.result != undefined && this.props.localOrders.orders.result != false) {
+      let order_end_time = this.props.localOrders.orders.result[0].order_end_time;
       let timeLeft = ''
       let matches = null;
 
@@ -131,23 +90,24 @@ class CheckIn extends Component {
 
       if (timeLeft == '0') {
         clearInterval(this.state.interval);
-        let id = this.props.localOrders.orders[0].id;
+        let id = this.props.localOrders.orders.result[0].id;
+        console.log(id)
 
         const findSpecificRoom = (data) => {
-          return this.props.localRooms.rooms[this.props.localRooms.rooms.findIndex(x => x.id == data.room_id)];
+          return this.props.localRooms.rooms.result[this.props.localRooms.rooms.result.findIndex(x => x.id == data.room_id)];
         }
 
         this.editValueSetter({
-          inputRoomName: findSpecificRoom(this.props.localOrders.orders[0]).name,
+          inputRoomName: findSpecificRoom(this.props.localOrders.orders.result[0]).name,
           inputDuration: '',
-          roomID: findSpecificRoom(this.props.localOrders.orders[0]).id,
-          customerPicker: (this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id) !== -1)
-            ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id)].customer_id : 0,
-          durationLeft: this.durationLeftSetter(this.props.localOrders.orders, findSpecificRoom(this.props.localOrders.orders[0])),
-          bookedStatus: (this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id) !== -1)
-            ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id)].is_booked : false
+          roomID: findSpecificRoom(this.props.localOrders.orders.result[0]).id,
+          customerPicker: (this.props.localOrders.orders.result.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders.result[0]).id) !== -1)
+            ? this.props.localOrders.orders.result[this.props.localOrders.orders.result.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders.result[0]).id)].customer_id : 0,
+          durationLeft: this.durationLeftSetter(this.props.localOrders.orders, findSpecificRoom(this.props.localOrders.orders.result[0])),
+          bookedStatus: (this.props.localOrders.orders.result.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders.result[0]).id) !== -1)
+            ? this.props.localOrders.orders.result[this.props.localOrders.orders.result.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders.result[0]).id)].is_booked : false
         }, false);
-        
+
         this.checkOut();
 
         // this.setState({ addCheckInDisplay: true });
@@ -157,20 +117,18 @@ class CheckIn extends Component {
   }
 
   editValueSetter = (params, modalDisplay) => {
-    console.log(params)
-    if (params.hasOwnProperty('customerPicker') && this.props.localCustomers.customers != false) {
-      params.customerPicker = this.props.localCustomers.customers[0].id;
-    } else if (params.hasOwnProperty('customerPicker') && this.props.localCustomers.customers == false) {
+    if (params.hasOwnProperty('customerPicker') && this.props.localCustomers.customers.result != undefined && this.props.localCustomers.customers.result != false) {
+      params.customerPicker = this.props.localCustomers.customers.result[0].id;
+    } else if (params.hasOwnProperty('customerPicker') && this.props.localCustomers.customers.result == undefined || this.props.localCustomers.customers.result == false) {
       params.customerPicker = null
     }
-
     params.addCheckInDisplay = modalDisplay;
     this.setState(params);
   }
 
   addCheckIn = () => {
     const { roomID, inputDuration, customerPicker } = this.state;
-    // console.group(customerPicker)
+
     if (roomID !== null && inputDuration !== '' && customerPicker != null) {
       this.props.handleAddCheckIn({
         data: {
@@ -185,12 +143,7 @@ class CheckIn extends Component {
       })
         .then(() => {
           if (this.props.localOrders.orders.status == 'error') {
-            Toast.show({
-              text: 'Error: Add Check In Failed',
-              textStyle: { fontSize: 12, fontWeight: 'bold' },
-              duration: 2000,
-              style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-            });
+            this.toastGenerator('error', "Error: Add Check In Failed");
           } else {
             this.setState({
               inputRoomName: '',
@@ -199,129 +152,135 @@ class CheckIn extends Component {
               durationLeft: '0',
               bookedStatus: false
             })
+            this.toastGenerator('success', "Add Checkin Success");
           }
         })
       this.setState({
         addCheckInDisplay: false,
       })
     } else {
-      Toast.show({
-        text: 'Error: customer not found and duration cannot be empty',
-        textStyle: { fontSize: 12, fontWeight: 'bold' },
-        duration: 2000,
-        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-      });
+      this.toastGenerator('error', "Error: customer not found and duration cannot be empty");
     }
   }
 
   checkOut = () => {
-    this.setState({ addCheckInDisplay: false })
-    this.props.handleCheckOut({
-      room_id: this.state.roomID,
-      token: this.state.signInData.token
-    })
-      .then(() => {
-        if (this.props.localOrders.orders.status == 'error') {
-          Toast.show({
-            text: "Error: Can't Checkout",
-            textStyle: { fontSize: 12, fontWeight: 'bold' },
-            duration: 2000,
-            style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-          });
-        } else {
-          this.setState({
-            interval: setInterval(this.setCheckOutTimer, 3000)
-          })
-        }
+    if (this.state.roomID != null && this.state.signInData != null) {
+      this.setState({ addCheckInDisplay: false })
+      this.props.handleCheckOut({
+        room_id: this.state.roomID,
+        token: this.state.signInData.token
       })
+        .then(() => {
+          if (this.props.localOrders.orders.status == 'error') {
+            this.toastGenerator('error', "Error: Can't Checkout")
+          } else {
+            this.setState({
+              interval: setInterval(this.setCheckOutTimer, 3000)
+            })
+            this.toastGenerator('success', "Checkout Success");
+          }
+        })
+    }
   }
 
   durationSetter = (data, dataToCompare) => {
-    let index = data.findIndex(x => x.room_id == dataToCompare.id);
-    if (index !== -1) {
-      return (data[index].duration + 1).toString();
+    if (data.result != null && data.result != false) {
+      let index = data.result.findIndex(x => x.room_id == dataToCompare.id);
+      if (index !== -1) {
+        return (data.result[index].duration + 1).toString();
+      } else {
+        return '0';
+      }
     } else {
-      return '0';
+      return '0'
     }
   }
 
   durationLeftSetter = (data, dataToCompare) => {
     let matches, durationLeft;
-    let index = data.findIndex(x => x.room_id == dataToCompare.id);
-    if (index !== -1) {
-      durationLeft = moment(new Date(data[index].order_end_time)).diff(moment(), 'minute');
-      // matches = durationLeft.match(/(\d+)/g);
-      return durationLeft.toString()
+    if (data.result != null && data.result != false) {
+      let index = data.result.findIndex(x => x.room_id == dataToCompare.id);
+      if (index !== -1) {
+        durationLeft = moment(new Date(data.result[index].order_end_time)).diff(moment(), 'minute');
+        // matches = durationLeft.match(/(\d+)/g);
+        return durationLeft.toString()
+      } else {
+        return '0';
+      }
     } else {
-      return '0';
+      return '0'
     }
   }
 
   loadData = (token) => {
     this.props.handleGetRooms({
-      token: token
+      token
     })
       .then(() => {
-        this.props.handleGetOrders({
-          token: token
-        })
-          .then(() => {
-            this.props.handleGetCustomers({
-              token: token
+        const rooms = this.props.localRooms.rooms;
+        if (rooms.hasOwnProperty('status')) {
+          if (rooms.status === 'success') {
+            this.props.handleGetOrders({
+              token
             })
               .then(() => {
-                if (this.props.localOrders.isSuccess) {
-                  // this.setCheckOutTimerData();
-                  if (this.props.localOrders.orders.hasOwnProperty('status')) {
-                    if (this.props.localOrders.orders.status == 'error') {
-                      Toast.show({
-                        text: this.props.localOrders.orders.message,
-                        textStyle: { fontSize: 12, fontWeight: 'bold' },
-                        duration: 2000,
-                        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-                      });
-                    }
-                  } else {
-                    this.setState({
-                      interval: setInterval(this.setCheckOutTimer, 3000),
-                      customerPicker: (this.props.localCustomers.customers != false) ? this.props.localCustomers.customers[0].id : null
+                const orders = this.props.localOrders.orders;
+                if (orders.hasOwnProperty('status')) {
+                  if (orders.status === 'success') {
+                    this.props.handleGetCustomers({
+                      token
                     })
+                      .then(() => {
+                        const customers = this.props.localCustomers.customers;
+                        if (customers.hasOwnProperty('status')) {
+                          if (customers.status == 'success') {
+                            this.setState({
+                              interval: setInterval(this.setCheckOutTimer, 3000),
+                              customerPicker: (this.props.localCustomers.customers.result != false) ? this.props.localCustomers.customers.result[0].id : null
+                            })
+                          } else if (customers.status == 'error') {
+                            this.toastGenerator('error', customers.message);
+                          }
+                        } else {
+                          this.toastGenerator('error', "Error: Can't load data, please check your internet connection and try again.");
+                        }
+                      })
+                      .catch((e) => {
+                        console.log(e)
+                        this.toastGenerator('error', "Error: Can't load data, please check your internet connection and try again.");
+                      })
+                    // ------------------------- Customers ------------------------------------ //
+                  } else if (orders.status === 'error') {
+                    this.toastGenerator('error', orders.message);
                   }
                 } else {
-                  Toast.show({
-                    text: "Error: Can't load data, please check your internet connection and try again.",
-                    textStyle: { fontSize: 12, fontWeight: 'bold' },
-                    duration: 2000,
-                    style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-                  });
+                  this.toastGenerator('error', "Error: Can't load data, please check your internet connection and try again.");
                 }
               })
-              .catch(() => {
-                Toast.show({
-                  text: "Error: Can't load data, please check your internet connection and try again.",
-                  textStyle: { fontSize: 12, fontWeight: 'bold' },
-                  duration: 2000,
-                  style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-                });
+              .catch((e) => {
+                this.toastGenerator('error', "Error: Can't load data, please check your internet connection and try again.");
               })
-          })
-          .catch(() => {
-            Toast.show({
-              text: "Error: Can't load data, please check your internet connection and try again.",
-              textStyle: { fontSize: 12, fontWeight: 'bold' },
-              duration: 2000,
-              style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-            });
-          })
+            // -------------------------------- Orders --------------------------------------- //
+          } else if (rooms.status === 'error') {
+            this.toastGenerator('error', rooms.message);
+          }
+        } else {
+          this.toastGenerator('error', "Error: Can't load data, please check your internet connection and try again.");
+        }
       })
-      .catch(() => {
-        Toast.show({
-          text: "Error: Can't load data, please check your internet connection and try again.",
-          textStyle: { fontSize: 12, fontWeight: 'bold' },
-          duration: 2000,
-          style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-        });
+      .catch((e) => {
+        this.toastGenerator('error', "Error: Can't load data, please check your internet connection and try again.")
       })
+    // -------------------------------------- Rooms ----------------------------------------- //
+  }
+
+  toastGenerator = (type = 'error', message) => {
+    Toast.show({
+      text: message,
+      textStyle: { fontSize: 12, fontWeight: 'bold' },
+      duration: 2000,
+      style: (type == 'error') ? [styles.toastStyle, styles.errorToast] : [styles.toastStyle, styles.successToast]
+    });
   }
 
   searchFilter(text) {
@@ -338,7 +297,7 @@ class CheckIn extends Component {
       const itemData = `${item.name.toUpperCase()}`
 
       const textData = text.toUpperCase()
-      
+
       return itemData.indexOf(textData) > -1;
     });
 
@@ -347,9 +306,71 @@ class CheckIn extends Component {
     })
   }
 
+  checkOrder = (type, roomID) => {
+    const orders = this.props.localOrders.orders;
+    if (type == 'grid') {
+      if (orders.result != undefined && orders.result != false) {
+        if (this.props.localOrders.orders.result.findIndex(x => x.room_id == roomID) !== -1) {
+          if (this.props.localOrders.orders.result[this.props.localOrders.orders.result.findIndex(x => x.room_id == roomID)].is_booked) {
+            return [styles.checkinGrid, styles.isBookedTrue];
+          } else {
+            return [styles.checkinGrid, styles.isBookedFalse];
+          }
+        } else {
+          return [styles.checkinGrid, styles.isBookedFalse];
+        }
+      } else {
+        return [styles.checkinGrid, styles.isBookedFalse]
+      }
+    } else if (type == 'gridText') {
+      if (orders.result != undefined && orders.result != false) {
+        if (this.props.localOrders.orders.result.findIndex(x => x.room_id == roomID) !== -1) {
+          if (this.props.localOrders.orders.result[this.props.localOrders.orders.result.findIndex(x => x.room_id == roomID)].is_booked) {
+            return [styles.gridTextName, styles.gridTextNameIsBookedTrue];
+          } else {
+            return [styles.gridTextName, styles.gridTextNameIsBookedFalse];
+          }
+        } else {
+          return [styles.gridTextName, styles.gridTextNameIsBookedFalse]
+        }
+      } else {
+        return [styles.gridTextName, styles.gridTextNameIsBookedFalse]
+      }
+    }
+  }
+
+  orderStatus = (roomID) => {
+    const orders = this.props.localOrders.orders;
+    if (orders.result != undefined && orders.result != false) {
+      if (this.props.localOrders.orders.result.findIndex(x => x.room_id == roomID) !== -1) {
+        if (this.props.localOrders.orders.result[this.props.localOrders.orders.result.findIndex(x => x.room_id == roomID)].is_booked) {
+          return moment(new Date(this.props.localOrders.orders.result[this.props.localOrders.orders.result.findIndex(x => x.room_id == roomID)].order_end_time)).diff(moment(), 'minute') + ' minute left';
+        } else {
+          return 'Avaible'
+        }
+      } else {
+        return 'Avaible';
+      }
+    } else {
+      return 'Avaible';
+    }
+  }
+
+  findSpecificKey = (obj, targetID, keyToGet) => {
+    if (obj.result != undefined && obj.result != false) {
+      if (obj.result.findIndex(x => x.room_id == targetID) !== -1) {
+        return obj.result[obj.result.findIndex(x => x.room_id == targetID)][keyToGet];
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
   renderSearchIcon = () => {
     return (
-      <Icon size={19} name="search" />
+      <Icon style={{ fontSize: 20 }} name="search" />
     );
   }
 
@@ -372,6 +393,7 @@ class CheckIn extends Component {
             placeholder="Search Check In...." size="small" />
         </Layout>
         <Modal
+          onBackdropPress={() => this.setState({ addCheckInDisplay: false })}
           isVisible={this.state.addCheckInDisplay}
           onBackButtonPress={() => this.setState({ addCheckInDisplay: false })}
           backdropOpacity={0.3}>
@@ -398,11 +420,13 @@ class CheckIn extends Component {
                   style={styles.pickerItem}
                   onValueChange={(itemValue, ItemIndex) =>
                     this.setState({ customerPicker: itemValue })}>
-                  {this.props.localCustomers.customers.map((item, index) =>
-                    ((this.props.localCustomers.customers != false)
-                      ? <Picker.Item label={`${item.name} - ${item.phone_number}`} value={item.id} />
-                      : '')
-                  )}
+                  {(this.props.localCustomers.customers.status !== 'error' && this.props.localCustomers.customers != undefined && this.props.localCustomers.customers != false)
+                    ?
+                    this.props.localCustomers.customers.result.map((item, index) =>
+                      ((this.props.localCustomers.customers.result != false)
+                        ? <Picker.Item key={item.id} label={`${item.name} - ${item.phone_number}`} value={item.id} />
+                        : '')
+                    ) : []}
                 </Picker>
               </View>
               <Input
@@ -436,28 +460,20 @@ class CheckIn extends Component {
           refreshing={this.props.localOrders.isLoading}
           refreshControl={<RefreshControl colors={['#284de0']} refreshing={this.props.localOrders.isLoading} onRefresh={() => this.loadData(this.state.signInData.token)} />}
           itemDimension={100}
-          items={(this.state.searchStatus) ? this.state.searchFilterData : this.props.localRooms.rooms}
+          items={(this.state.searchStatus) ? this.state.searchFilterData : (this.props.localRooms.rooms.status !== 'error' && this.props.localRooms.rooms.result != undefined) ? this.props.localRooms.rooms.result : []}
           renderItem={({ item, index }) =>
-            <View style={
-              ((this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1)
-                ? (this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].is_booked
-                  ? [styles.checkinGrid, styles.isBookedTrue]
-                  : [styles.checkinGrid, styles.isBookedFalse])
-                : [styles.checkinGrid, styles.isBookedFalse])}>
-              <Text style={((this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1)
-                ? (this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].is_booked
-                  ? [styles.gridTextName, styles.gridTextNameIsBookedTrue]
-                  : [styles.gridTextName, styles.gridTextNameIsBookedFalse])
-                : [styles.gridTextName, styles.gridTextNameIsBookedFalse])}>{item.name}</Text>
-              <Text style={styles.gridText}
-              onPress={() => this.editValueSetter({
-                inputRoomName: item.name,
-                inputDuration: '',
-                roomID: item.id,
-                customerPicker: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].customer_id : this.state.customerPicker,
-                durationLeft: this.durationLeftSetter(this.props.localOrders.orders, item),
-                bookedStatus: (this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].is_booked : false
-              }, true)}>{(this.props.localOrders.orders.findIndex(x => x.room_id == item.id) !== -1) ? moment(new Date(this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == item.id)].order_end_time)).diff(moment(), 'minute') + ' minute left' : 'Avaible'}</Text>
+            <View style={this.checkOrder('grid', item.id)}>
+              <Text style={this.checkOrder('gridText', item.id)}>{item.name}</Text>
+              <Text
+                style={styles.gridText}
+                onPress={() => this.editValueSetter({
+                  inputRoomName: item.name,
+                  inputDuration: '',
+                  roomID: item.id,
+                  customerPicker: (this.findSpecificKey(this.props.localOrders.orders, item.id, 'customer_id') !== null) ? this.findSpecificKey(this.props.localOrders.orders, item.id, 'customer_id') : this.state.customerPicker,
+                  durationLeft: this.durationLeftSetter(this.props.localOrders.orders, item),
+                  bookedStatus: (this.findSpecificKey(this.props.localOrders.orders, item.id, 'is_booked')) ? this.findSpecificKey(this.props.localOrders.orders, item.id, 'is_booked') : false
+                }, true)}>{this.orderStatus(item.id)}</Text>
             </View>
           }
         />

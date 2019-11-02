@@ -22,7 +22,7 @@ class Customer extends Component {
       inputPhoneNum: '',
       inputAvatar: null,
       editModalId: 0,
-      avatar: { uri: 'https://i1.wp.com/kiryuu.co/wp-content/uploads/2019/09/Kiryuu-Sampul.png' },
+      avatar: require('./../assets/images/profile-picture-default.png'),
       prevPic: '',
       signInData: null,
       onDelete: false,
@@ -84,12 +84,7 @@ class Customer extends Component {
     const { inputCustomerName, inputIdNum, inputPhoneNum, inputAvatar } = this.state;
     let formData = new FormData();
     if (inputCustomerName == '' && inputIdNum == '' && inputPhoneNum == '') {
-      Toast.show({
-        text: "Error: All Field Except Photos Cannot Be Empty!",
-        textStyle: { fontSize: 12, fontWeight: 'bold' },
-        duration: 2000,
-        style: styles.errorToast
-      });
+      this.toastGenerator('error', "Error: All Field Except Photos Cannot Be Empty!")
     } else {
       formData.append('name', inputCustomerName);
       formData.append('identity_number', inputIdNum);
@@ -120,12 +115,7 @@ class Customer extends Component {
   editCustomer = () => {
     const { inputCustomerName, inputIdNum, inputPhoneNum, inputAvatar } = this.state;
     if (inputCustomerName == '' && inputIdNum == '' && inputPhoneNum == '') {
-      Toast.show({
-        text: "Error: All Field Except Photos Cannot Be Empty!",
-        textStyle: { fontSize: 12, fontWeight: 'bold' },
-        duration: 2000,
-        style: styles.errorToast
-      });
+      this.toastGenerator('error', "Error: All Field Except Photos Cannot Be Empty!")
     } else {
       let formData = new FormData();
 
@@ -189,23 +179,22 @@ class Customer extends Component {
       .then(() => {
         if (this.props.localCustomers.customers.hasOwnProperty('status')) {
           if (this.props.localCustomers.customers.status == 'error') {
-            Toast.show({
-              text: this.props.localCustomers.customers.message,
-              textStyle: { fontSize: 12, fontWeight: 'bold' },
-              duration: 2000,
-              style: styles.errorToast
-            });
+            this.toastGenerator('error', this.props.localCustomers.customers.message)
           }
         }
       })
       .catch(() => {
-        Toast.show({
-          text: "Error: Can't load data, please check your internet connection and try again.",
-          textStyle: { fontSize: 12, fontWeight: 'bold' },
-          duration: 2000,
-          style: styles.errorToast
-        });
+        this.toastGenerator('error', "Error: Can't load data, please check your internet connection and try again.")
       })
+  }
+
+  toastGenerator = (type = 'error', message) => {
+    Toast.show({
+      text: message,
+      textStyle: { fontSize: 12, fontWeight: 'bold' },
+      duration: 2000,
+      style: (type == 'error') ? [styles.toastStyle, styles.errorToast] : [styles.toastStyle, styles.successToast]
+    });
   }
 
   searchFilter(text) {
@@ -256,6 +245,13 @@ class Customer extends Component {
           </View>
         </Modal> */}
         <Modal
+          onBackdropPress={() => this.setState({
+            addCustomerModalDisplay: false,
+            inputCustomerName: '',
+            inputIdNum: '',
+            inputPhoneNum: '',
+            inputAvatar: null
+          })}
           isVisible={this.state.addCustomerModalDisplay}
           onBackButtonPress={() => this.setState({
             addCustomerModalDisplay: false,
@@ -315,6 +311,13 @@ class Customer extends Component {
         </Modal>
 
         <Modal
+          onBackdropPress={() => this.setState({
+            editCustomerModalDisplay: false,
+            inputCustomerName: '',
+            inputIdNum: '',
+            inputPhoneNum: '',
+            inputAvatar: null
+          })}
           isVisible={this.state.editCustomerModalDisplay}
           onBackButtonPress={() => this.setState({
             editCustomerModalDisplay: false,
@@ -378,7 +381,7 @@ class Customer extends Component {
           refreshing={this.props.localCustomers.isLoading}
           refreshControl={<RefreshControl colors={['#284de0']} refreshing={this.props.localCustomers.isLoading} onRefresh={() => this.loadData(this.state.signInData.token)} />}
           itemDimension={200}
-          items={(this.state.searchStatus) ? this.state.searchFilterData : this.props.localCustomers.customers}
+          items={(this.state.searchStatus) ? this.state.searchFilterData : this.props.localCustomers.customers.result}
           renderItem={({ item }) =>
             <Card
               onTouchEndCapture={() => this.editValueSetter({

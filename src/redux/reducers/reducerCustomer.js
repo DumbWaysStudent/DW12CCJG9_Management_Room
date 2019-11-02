@@ -37,16 +37,8 @@ export default function reducerCustomer(state = initialState, action) {
                 isLoading: true
             }
         case `${types.ADD_CUSTOMER}_FULFILLED`:
-            if (action.payload.data.status == 'error') {
-                Toast.show({
-                    text: `Error: ${action.payload.data.message}`,
-                    textStyle: { fontSize: 12, fontWeight: 'bold' },
-                    duration: 2000,
-                    style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-                  });
-            } else {
-                state.customers.push(action.payload.data);
-            }
+            state.customers.status = action.payload.data.status;
+            state.customers.result.push(action.payload.data.result);
             return {
                 ...state,
                 isLoading: false,
@@ -66,8 +58,9 @@ export default function reducerCustomer(state = initialState, action) {
                 isLoading: true
             }
         case `${types.UPDATE_CUSTOMER}_FULFILLED`:
-            let index = state.customers.findIndex(x => x.id == action.payload.data.id);
-            state.customers[index] = action.payload.data;
+            state.customers.status = action.payload.data.status;
+            let index = state.customers.result.findIndex(x => x.id == action.payload.data.result.id);
+            state.customers.result[index] = action.payload.data.result;
             return {
                 ...state,
                 isLoading: false,
@@ -87,12 +80,13 @@ export default function reducerCustomer(state = initialState, action) {
                 isLoading: true
             }
         case `${types.DELETE_CUSTOMER}_FULFILLED`:
-            let newData = state.customers.filter(x => x.id != action.payload.data.id);
+            state.customers.status = action.payload.data.status;
+            let newData = state.customers.result.filter(x => x.id != action.payload.data.id);
             return {
                 ...state,
                 isLoading: false,
                 isSuccess: true,
-                customers: newData
+                customers: {result: newData}
             }
         case `${types.DELETE_CUSTOMER}_REJECTED`:
             return {

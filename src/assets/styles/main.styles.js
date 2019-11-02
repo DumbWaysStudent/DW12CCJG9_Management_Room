@@ -12,6 +12,44 @@ export default StyleSheet.create({
     containerHome: {
         padding: 0
     },
+    eConnContainer: {
+        flex: 1,
+        padding: 10
+    },
+    eConnSubContainer: {
+        backgroundColor: '#ff3333',
+        padding: 8,
+        borderRadius: 5,
+        marginTop: 200
+    },
+    eConnText: {
+        fontWeight: 'bold',
+        // fontSize: 20
+        alignSelf: 'center',
+        color: '#fff'
+    },
+    eConnSubText: {
+        fontWeight: 'bold',
+        fontSize: 14,
+        textAlign: 'justify',
+        color: '#fff'
+    },
+    eConnDialogBtn: {
+        flexDirection: 'row',
+        marginVertical: 15,
+        alignSelf: 'center'
+    },
+    dialogBtn: {
+        flex: 1,
+        marginHorizontal: 5
+    },
+    exitBtn: {
+
+    },
+    tryAgainBtn: {
+        backgroundColor: '#17751e',
+        borderColor: '#17751e'
+    },
     frontHeader: {
         backgroundColor: 'rgba(0,0,0,0)',
         marginTop: 70
@@ -206,7 +244,7 @@ export default StyleSheet.create({
         fontWeight: 'bold'
     },
     profileItem: {
-        marginTop: 100,
+        marginTop: 30,
         marginHorizontal: 7
     },
     editProfile: {

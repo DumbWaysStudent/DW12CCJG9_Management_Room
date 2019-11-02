@@ -3,6 +3,8 @@ import { View, AsyncStorage } from 'react-native';
 import { Layout, Spinner, Text } from 'react-native-ui-kitten';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import styles from './../assets/styles/main.styles';
+import API_URL from './../api_url';
+import Axios from 'axios';
 
 class Splash extends Component {
   constructor(props) {
@@ -12,40 +14,51 @@ class Splash extends Component {
   }
 
   verifyToken = () => {
-    AsyncStorage.getItem('signInData', (err, res) => {
-      if (!err) {
-        if (res == null) {
-          setTimeout(() => {
-            this.props.navigation.navigate('SignIn')
-          }, 1000)
-        } else {
-          res = JSON.parse(res);
-          const token = res.token
-          if (token) {
-
-            // jwt.verify(token, '12378bhdfhdsj783hjsdf237rhjsd', function(err, decoded) {
-            //   console.log(err);
-            //   if (decoded !== undefined) {
-            //     this.props.navigation.navigate('ForYou');
-            //   } else {
-            //     this.props.navigation.navigate('SignIn');
-            //   }
-            // });
-
-            setTimeout(() => {
-              this.props.navigation.navigate('CheckIn')
-            }, 1000)
+    Axios
+    .get(`http://192.168.0.35:5000/api/v2/`)
+    .then(result => {
+      if (result.data.status == 'errorConn') {
+        this.props.navigation.navigate('ErrorConnection');
+      } else {
+        AsyncStorage.getItem('signInData', (err, res) => {
+          if (!err) {
+            if (res == null) {
+              setTimeout(() => {
+                this.props.navigation.navigate('SignIn')
+              }, 1000)
+            } else {
+              res = JSON.parse(res);
+              const token = res.token
+              if (token) {
+    
+                // jwt.verify(token, '12378bhdfhdsj783hjsdf237rhjsd', function(err, decoded) {
+                //   console.log(err);
+                //   if (decoded !== undefined) {
+                //     this.props.navigation.navigate('ForYou');
+                //   } else {
+                //     this.props.navigation.navigate('SignIn');
+                //   }
+                // });
+    
+                setTimeout(() => {
+                  this.props.navigation.navigate('CheckIn')
+                }, 1000)
+              } else {
+                setTimeout(() => {
+                  this.props.navigation.navigate('SignIn')
+                }, 1000)
+              }
+            }
           } else {
             setTimeout(() => {
               this.props.navigation.navigate('SignIn')
             }, 1000)
           }
-        }
-      } else {
-        setTimeout(() => {
-          this.props.navigation.navigate('SignIn')
-        }, 1000)
+        })
       }
+    })
+    .catch(err => {
+      console.log(err);
     })
   }
 

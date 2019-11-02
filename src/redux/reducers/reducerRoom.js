@@ -37,16 +37,8 @@ export default function reducerRoom(state = initialState, action) {
                 isLoading: true
             }
         case `${types.ADD_ROOM}_FULFILLED`:
-            if (action.payload.data.status == 'error') {
-                Toast.show({
-                    text: `Error: ${action.payload.data.message}`,
-                    textStyle: { fontSize: 12, fontWeight: 'bold' },
-                    duration: 2000,
-                    style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-                });
-            } else {
-                state.rooms.push(action.payload.data)
-            }
+            state.rooms.status = action.payload.data.status;
+            state.rooms.result.push(action.payload.data.result)
             return {
                 ...state,
                 isLoading: false,
@@ -66,8 +58,9 @@ export default function reducerRoom(state = initialState, action) {
                 isLoading: true
             }
         case `${types.UPDATE_ROOM}_FULFILLED`:
-            let index = state.rooms.findIndex(x => x.id == action.payload.data.id);
-            state.rooms[index] = action.payload.data;
+            state.rooms.status = action.payload.data.status;
+            let index = state.rooms.result.findIndex(x => x.id == action.payload.data.result.id);
+            state.rooms.result[index] = action.payload.data.result;
             return {
                 ...state,
                 isLoading: false,
@@ -87,12 +80,13 @@ export default function reducerRoom(state = initialState, action) {
                 isLoading: true
             }
         case `${types.DELETE_ROOM}_FULFILLED`:
-            let newData = state.rooms.filter(x => x.id != action.payload.data.id);
+            state.rooms.status = action.payload.data.status;
+            let newData = state.rooms.result.filter(x => x.id != action.payload.data.room_id);
             return {
                 ...state,
                 isLoading: false,
                 isSuccess: true,
-                rooms: newData
+                rooms: {result: newData}
             }
         case `${types.DELETE_ROOM}_REJECTED`:
             return {

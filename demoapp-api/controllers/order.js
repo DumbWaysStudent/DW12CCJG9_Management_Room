@@ -5,7 +5,10 @@ const Order = models.order;
 exports.showCheckIn = (req, res) => {
     Order.findAll()
         .then(result => {
-            res.send(result);
+            res.send({
+                status: 'success',
+                result
+            });
         })
         .catch(e => {
             res.send({
@@ -49,6 +52,7 @@ exports.deleteOrder = (req, res) => {
         .destroy({ where: { room_id: req.params.room_id } })
         .then(() => {
             res.send({
+                status: 'success',
                 room_id: req.params.room_id
             })
         })

@@ -4,8 +4,11 @@ const Room = models.room;
 exports.getRooms = (req, res) => {
     Room
         .findAll()
-        .then(rooms => {
-            res.send(rooms);
+        .then(result => {
+            res.send({
+                status: 'success',
+                result
+            });
         })
         .catch(e => {
             res.send({
@@ -25,7 +28,10 @@ exports.addRoom = (req, res) => {
                 Room
                 .create(req.body)
                 .then((result) => {
-                    res.send(result);
+                    res.send({
+                        status: 'success',
+                        result
+                    });
                 })
                 .catch(e => {
                     throw e;
@@ -54,8 +60,10 @@ exports.updateRoom = (req, res) => {
         .then(result => {
             res.send({
                 status: 'success',
-                id: req.params.id,
-                name: req.body.name
+                result: {
+                    id: req.params.id,
+                    name: req.body.name
+                }
             })
         })
         .catch(e => {
@@ -73,7 +81,7 @@ exports.deleteRoom = (req, res) => {
     .then(result => {
         res.send({
             status: 'success',
-            id: req.params.id
+            room_id: req.params.id
         });
     })
     .catch(e => {

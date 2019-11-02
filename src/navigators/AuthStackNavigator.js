@@ -3,6 +3,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
 import Splash from '../screens/Splash';
+import ErrorConnection from '../screens/ErrorConnection';
 
 
 const AuthStackNavigator = createStackNavigator({
@@ -20,6 +21,12 @@ const AuthStackNavigator = createStackNavigator({
         },
         Splash: {
             screen: Splash,
+            navigationOptions: () => ({
+                header: null,
+            })
+        },
+        ErrorConnection: {
+            screen: ErrorConnection,
             navigationOptions: () => ({
                 header: null,
             })

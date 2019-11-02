@@ -28,11 +28,12 @@ export default function reducerOrder(state = initialState, action) {
                 isLoading: true
             }
         case `${types.GET_ORDERS}_FULFILLED`:
+            // console.log(action.payload.data.result)
             return {
                 ...state,
                 isLoading: false,
                 isSuccess: true,
-                orders: action.payload.data.sort(compare)
+                orders: action.payload.data
             }
         case `${types.GET_ORDERS}_REJECTED`:
             return {
@@ -48,8 +49,9 @@ export default function reducerOrder(state = initialState, action) {
                 isLoading: true
             }
         case `${types.CHECK_IN}_FULFILLED`:
-            state.orders.push(action.payload.data.result)
-            state.orders = state.orders.sort(compare)
+            state.orders.status = action.payload.data.status;
+            state.orders.result.push(action.payload.data.result)
+            state.orders.result = state.orders.result.sort(compare)
             return {
                 ...state,
                 isLoading: false,
@@ -69,12 +71,13 @@ export default function reducerOrder(state = initialState, action) {
                 isLoading: true
             }
         case `${types.CHECK_OUT}_FULFILLED`:
-            let newData = state.orders.filter(x => x.room_id != action.payload.data.room_id);
+            state.orders.status = action.payload.data.status;
+            let newData = state.orders.result.filter(x => x.room_id != action.payload.data.room_id);
             return {
                 ...state,
                 isLoading: false,
                 isSuccess: true,
-                orders: newData.sort(compare)
+                orders: {result: newData.sort(compare)}
             }
         case `${types.CHECK_OUT}_REJECTED`:
             return {

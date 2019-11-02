@@ -5,8 +5,11 @@ const fs = require('fs');
 exports.getCustomers = (req, res) => {
     Customer
         .findAll()
-        .then(customers => {
-            res.send(customers);
+        .then(result => {
+            res.send({
+                status: 'success',
+                result
+            });
         })
         .catch(e => {
             res.send({
@@ -31,7 +34,10 @@ exports.addCustomer = (req, res) => {
                         image: req.file.path
                     })
                     .then(result => {
-                        res.send(result);
+                        res.send({
+                            status: 'success',
+                            result
+                        });
                     })
                     .catch(e => {
                         throw e;
@@ -62,16 +68,19 @@ exports.updateCustomer = (req, res) => {
             identity_number,
             phone_number,
             image: ((req.hasOwnProperty('file') == false) ? req.body.prevPic : req.file.path)
-        }, {    
+        }, {
             where: { id: req.params.id }
         })
         .then(result => {
             res.send({
-                id: req.params.id,
-                name,
-                identity_number,
-                phone_number,
-                image: ((req.hasOwnProperty('file') == false) ? req.body.prevPic : req.file.path)
+                status: 'success',
+                result: {
+                    id: req.params.id,
+                    name,
+                    identity_number,
+                    phone_number,
+                    image: ((req.hasOwnProperty('file') == false) ? req.body.prevPic : req.file.path)
+                }
             })
         })
         .catch(e => {
@@ -94,7 +103,7 @@ exports.deleteCustomer = (req, res) => {
             console.log(req.body.prevPic)
         }
     });
-    
+
     Customer
         .destroy({ where: { id: req.params.id } })
         .then(result => {

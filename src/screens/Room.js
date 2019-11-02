@@ -8,8 +8,6 @@ import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { FlatGrid } from 'react-native-super-grid';
 import styles from './../assets/styles/main.styles'
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import moment from 'moment';
 
 class Room extends Component {
   constructor(props) {
@@ -43,28 +41,26 @@ class Room extends Component {
 
   handleAddRoom = () => {
     if (this.state.inputRoomName == '') {
-      Toast.show({
-        text: `Error: Room Name Cannot Be Empty!`,
-        textStyle: { fontSize: 12, fontWeight: 'bold' },
-        duration: 2000,
-        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-      });
+      this.toastGenerator('error', "Error: Room Name Cannot Be Empty!")
     } else {
       this.props.handleAddRoom({
         name: this.state.inputRoomName,
         token: this.state.signInData.token
       })
         .then(() => {
-          this.setState({
-            inputRoomName: '',
-            editModalValue: '',
-            editModalId: 0,
-          })
+          if (this.props.localRooms.rooms.status == 'success') {
+            this.toastGenerator('success', 'Add Room Success')
+          } else if (this.props.localRooms.rooms.status == 'error') {
+            this.toastGenerator('error', this.props.localRooms.rooms.message)
+          }
         });
-
-      this.setState({
-        addRoomModalDisplay: false,
-      })
+        
+        this.setState({
+          addRoomModalDisplay: false,
+          inputRoomName: '',
+          editModalValue: '',
+          editModalId: 0,
+        })
     }
   }
 
@@ -80,16 +76,16 @@ class Room extends Component {
       token: this.state.signInData.token
     })
       .then(() => {
-        this.setState({
-          inputRoomName: '',
-          editModalValue: '',
-          editModalId: 0,
-        })
+        this.toastGenerator('success', 'Edit Room Success');
       })
 
     this.setState({
       editRoomModalDisplay: false,
+      inputRoomName: '',
+      editModalValue: '',
+      editModalId: 0,
     })
+
   }
 
   deleteRoom = (id) => {
@@ -98,25 +94,21 @@ class Room extends Component {
       onDelete: true
     });
 
-    if (this.props.localOrders.orders.findIndex(x => x.room_id == id) == -1) {
+    if (this.props.localOrders.orders.result.findIndex(x => x.room_id == id) == -1) {
       this.props.handleDeleteRoom({
         id,
         token: this.state.signInData.token
       })
-
+        .then(() => {
+          this.toastGenerator('success', 'Delete Room Success');
+        })
       this.setState({
-        addCustomerModalDisplay: false,
         inputRoomName: '',
         editModalValue: '',
         editModalId: 0,
       });
     } else {
-      Toast.show({
-        text: "Error: Order in this room is found, please checkout first.",
-        textStyle: { fontSize: 12, fontWeight: 'bold' },
-        duration: 2000,
-        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-      });
+      this.toastGenerator('error', "Error: Order in this room is found, please checkout first.")
     }
   }
 
@@ -127,27 +119,25 @@ class Room extends Component {
       .then(() => {
         if (this.props.localRooms.rooms.hasOwnProperty('status')) {
           if (this.props.localRooms.rooms.status == 'error') {
-            Toast.show({
-              text: this.props.localRooms.rooms.message,
-              textStyle: { fontSize: 12, fontWeight: 'bold' },
-              duration: 2000,
-              style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-            });
+            this.toastGenerator('error', this.props.localRooms.rooms.message)
           }
         }
       })
       .catch((result) => {
-        Toast.show({
-          text: "Error: Can't load data, please check your internet connection and try again.",
-          textStyle: { fontSize: 12, fontWeight: 'bold' },
-          duration: 2000,
-          style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-        });
+        this.toastGenerator('error', "Error: Can't load data, please check your internet connection and try again.")
       })
   }
 
+  toastGenerator = (type = 'error', message) => {
+    Toast.show({
+      text: message,
+      textStyle: { fontSize: 12, fontWeight: 'bold' },
+      duration: 500,
+      style: (type == 'error') ? [styles.toastStyle, styles.errorToast] : [styles.toastStyle, styles.successToast]
+    });
+  }
+
   searchFilter(text) {
-    console.log(text)
     if (text != '') {
       this.setState({
         searchStatus: true
@@ -158,10 +148,9 @@ class Room extends Component {
       })
     }
     const newData = this.props.localRooms.rooms.filter(item => {
-      const itemData = `${item.name.toUpperCase()}`
-
+      const itemData = `${item.name.toUpperCase()}`;
       const textData = text.toUpperCase();
-      console.log(itemData.indexOf(textData))
+
       return itemData.indexOf(textData) > -1;
     });
 
@@ -194,6 +183,7 @@ class Room extends Component {
           </View>
         </Modal> */}
         <Modal
+          onBackdropPress={() => this.setState({ addRoomModalDisplay: false })}
           isVisible={this.state.addRoomModalDisplay}
           onBackButtonPress={() => this.setState({ addRoomModalDisplay: false })}
           backdropOpacity={0.3}>
@@ -215,6 +205,7 @@ class Room extends Component {
           </Layout>
         </Modal>
         <Modal
+          onBackdropPress={() => this.setState({ editRoomModalDisplay: false })}
           isVisible={this.state.editRoomModalDisplay}
           onBackButtonPress={() => this.setState({ editRoomModalDisplay: false })}
           backdropOpacity={0.3}>
@@ -241,7 +232,7 @@ class Room extends Component {
           refreshing={this.props.localRooms.isLoading}
           refreshControl={<RefreshControl colors={['#284de0']} refreshing={this.props.localRooms.isLoading} onRefresh={() => this.loadData(this.state.signInData.token)} />}
           itemDimension={100}
-          items={(this.state.searchStatus) ? this.state.searchFilterData : this.props.localRooms.rooms}
+          items={(this.state.searchStatus) ? this.state.searchFilterData : this.props.localRooms.rooms.result}
           renderItem={({ item }) =>
             <View style={styles.checkinGrid}><Text
               style={[styles.gridText, styles.gridRoomText]}

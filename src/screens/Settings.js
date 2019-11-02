@@ -229,7 +229,10 @@ class Settings extends Component {
             <Spinner />
           </View>
         </Modal> */}
-        <Modal isVisible={this.state.editProfileModal}>
+        <Modal
+          onBackdropPress={() => this.setState({ editProfileModal: false })}
+          onBackButtonPress={() => this.setState({ editProfileModal: false })}
+          isVisible={this.state.editProfileModal}>
           <View style={styles.editProfile}>
             <Icon
               style={styles.editProfileExitBtn} name="times-circle"

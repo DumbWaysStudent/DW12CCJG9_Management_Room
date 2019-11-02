@@ -46,7 +46,7 @@ const storage = multer.diskStorage({
                         if (err) throw err
                     })
                 }
-                fileName = `profile-${req.body.name}.${file.mimetype.split('/')[1]}`;
+                fileName = `-profile-${req.body.name}.${file.mimetype.split('/')[1]}`;
                 break;
             case 'avatar_customer':
                 if (fs.existsSync(`${req.body.prevPic}`)) {
@@ -54,14 +54,14 @@ const storage = multer.diskStorage({
                         if (err) throw err
                     })
                 }
-                fileName = `customer-${req.body.name}.${file.mimetype.split('/')[1]}`;
+                fileName = `-customer-${req.body.name}.${file.mimetype.split('/')[1]}`;
                 break;
 
             default:
                 break;
         }
         console.log(fileName)
-        cb(null,fileName)
+        cb(null, new Date().toISOString().toString().replace(/(\:)/g, '-' ) + fileName)
     }
 })
 
