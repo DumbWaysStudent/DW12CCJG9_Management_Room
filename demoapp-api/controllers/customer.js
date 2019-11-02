@@ -11,7 +11,7 @@ exports.getCustomers = (req, res) => {
         .catch(e => {
             res.send({
                 status: 'error',
-                message: "Error: Can't load data",
+                message: "Error: Can't load customers, please check your internet connection and try again.",
                 error: e
             });
         });
@@ -61,8 +61,8 @@ exports.updateCustomer = (req, res) => {
             name,
             identity_number,
             phone_number,
-            image: req.file.path
-        }, {
+            image: ((req.hasOwnProperty('file') == false) ? req.body.prevPic : req.file.path)
+        }, {    
             where: { id: req.params.id }
         })
         .then(result => {
@@ -71,7 +71,7 @@ exports.updateCustomer = (req, res) => {
                 name,
                 identity_number,
                 phone_number,
-                image: req.file.path
+                image: ((req.hasOwnProperty('file') == false) ? req.body.prevPic : req.file.path)
             })
         })
         .catch(e => {

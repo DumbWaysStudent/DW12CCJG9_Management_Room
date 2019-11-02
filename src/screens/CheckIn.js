@@ -147,7 +147,7 @@ class CheckIn extends Component {
           bookedStatus: (this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id) !== -1)
             ? this.props.localOrders.orders[this.props.localOrders.orders.findIndex(x => x.room_id == findSpecificRoom(this.props.localOrders.orders[0]).id)].is_booked : false
         }, false);
-
+        
         this.checkOut();
 
         // this.setState({ addCheckInDisplay: true });
@@ -157,10 +157,11 @@ class CheckIn extends Component {
   }
 
   editValueSetter = (params, modalDisplay) => {
-    if (params.hasOwnProperty('customerPicker') && params.customerPicker === null) {
-      if (this.props.localCustomers.customers != false) {
-        params.customerPicker = this.props.localCustomers.customers[0].id
-      }
+    console.log(params)
+    if (params.hasOwnProperty('customerPicker') && this.props.localCustomers.customers != false) {
+      params.customerPicker = this.props.localCustomers.customers[0].id;
+    } else if (params.hasOwnProperty('customerPicker') && this.props.localCustomers.customers == false) {
+      params.customerPicker = null
     }
 
     params.addCheckInDisplay = modalDisplay;
@@ -169,6 +170,7 @@ class CheckIn extends Component {
 
   addCheckIn = () => {
     const { roomID, inputDuration, customerPicker } = this.state;
+    // console.group(customerPicker)
     if (roomID !== null && inputDuration !== '' && customerPicker != null) {
       this.props.handleAddCheckIn({
         data: {

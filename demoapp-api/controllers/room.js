@@ -10,7 +10,7 @@ exports.getRooms = (req, res) => {
         .catch(e => {
             res.send({
                 status: 'error',
-                message: "Error: Can't load data",
+                message: "Error: Can't load rooms, please check your internet connection and try again.",
                 error: e
             });
         })

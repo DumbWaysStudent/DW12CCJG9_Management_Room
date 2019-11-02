@@ -98,17 +98,26 @@ class Room extends Component {
       onDelete: true
     });
 
-    this.props.handleDeleteRoom({
-      id,
-      token: this.state.signInData.token
-    })
+    if (this.props.localOrders.orders.findIndex(x => x.room_id == id) == -1) {
+      this.props.handleDeleteRoom({
+        id,
+        token: this.state.signInData.token
+      })
 
-    this.setState({
-      addCustomerModalDisplay: false,
-      inputRoomName: '',
-      editModalValue: '',
-      editModalId: 0,
-    });
+      this.setState({
+        addCustomerModalDisplay: false,
+        inputRoomName: '',
+        editModalValue: '',
+        editModalId: 0,
+      });
+    } else {
+      Toast.show({
+        text: "Error: Order in this room is found, please checkout first.",
+        textStyle: { fontSize: 12, fontWeight: 'bold' },
+        duration: 2000,
+        style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
+      });
+    }
   }
 
   loadData = (token) => {
@@ -232,10 +241,10 @@ class Room extends Component {
           refreshing={this.props.localRooms.isLoading}
           refreshControl={<RefreshControl colors={['#284de0']} refreshing={this.props.localRooms.isLoading} onRefresh={() => this.loadData(this.state.signInData.token)} />}
           itemDimension={100}
-          items={ (this.state.searchStatus) ? this.state.searchFilterData : this.props.localRooms.rooms}
+          items={(this.state.searchStatus) ? this.state.searchFilterData : this.props.localRooms.rooms}
           renderItem={({ item }) =>
             <View style={styles.checkinGrid}><Text
-              style={styles.gridText}
+              style={[styles.gridText, styles.gridRoomText]}
               onPress={() => this.editRoomValueSetter({
                 editModalValue: item.name,
                 editModalId: item.id
@@ -268,7 +277,8 @@ class Room extends Component {
 
 const mapStateToProps = state => {
   return {
-    localRooms: state.rooms
+    localRooms: state.rooms,
+    localOrders: state.orders
   }
 }
 

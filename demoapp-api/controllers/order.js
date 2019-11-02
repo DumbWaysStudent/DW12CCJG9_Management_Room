@@ -10,7 +10,7 @@ exports.showCheckIn = (req, res) => {
         .catch(e => {
             res.send({
                 status: 'error',
-                message: "Error: Can't load data",
+                message: "Error: Can't load orders, please check your internet connection and try again.",
                 error: e
             });
         })
@@ -49,7 +49,6 @@ exports.deleteOrder = (req, res) => {
         .destroy({ where: { room_id: req.params.room_id } })
         .then(() => {
             res.send({
-                status: 'success',
                 room_id: req.params.room_id
             })
         })

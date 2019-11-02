@@ -10,6 +10,9 @@ const port = 5000;
 app.use(bodyParser.json());
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
+// ------ Checker -----------//
+const handlers = require('./handlers');
+
 //------- Controllers -------//
 const UserController = require('./controllers/user');
 const RoomController = require('./controllers/room');
@@ -21,10 +24,11 @@ const {authenticated} = require('./middleware');
 const { upload } = require('./upload');
 
 app.get('/', (req, res) => {
-    res.send('CONNECTED TO LEAF HOTEL API');
+    res.redirect('/api/v2/');
 })
 
 app.group('/api/v2/', (router) => {
+    router.get('/', handlers.checkDBConn);
     // ---------- User ----------//
     router.post('/login', UserController.login);
     router.post('/register', UserController.register);
