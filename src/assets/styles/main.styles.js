@@ -244,6 +244,7 @@ export default StyleSheet.create({
         fontWeight: 'bold'
     },
     profileItem: {
+        borderRadius: 5,
         marginTop: 30,
         marginHorizontal: 7
     },
@@ -280,5 +281,36 @@ export default StyleSheet.create({
     editSaveBtn: {
         marginTop: 40,
         marginHorizontal: 10
+    },
+    settingList: {
+        borderRadius: 5
+    },
+    settingListItem: {
+        borderBottomWidth: 1,
+        borderColor: '#eee'
+    },
+    settingListItemText: {
+        padding: 8,
+        width: '100%',
+        height: '100%',
+        fontWeight: 'bold',
+        fontSize: 14
+    },
+
+    // History
+    historyContainer: {
+        padding: 15,
+        backgroundColor: '#fff'
+    },
+    historyCard: {
+        position: 'relative',
+        padding: 10,
+        borderRadius: 10
+    },
+    historyCardLast: {
+        marginBottom: 100
+    },
+    historyCardText: {
+        fontWeight: 'bold'
     }
 });

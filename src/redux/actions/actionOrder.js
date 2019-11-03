@@ -30,6 +30,7 @@ export const handleCheckOut = (params) => ({
     payload: axios({
         method: 'delete',
         url: `${API_URL}/checkout/${params.room_id}`,
+        data: params.data,
         headers: {
             Authorization: params.token
         }

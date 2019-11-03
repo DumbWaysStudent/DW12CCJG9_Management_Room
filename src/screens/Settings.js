@@ -27,7 +27,13 @@ class Settings extends Component {
       inputName: '',
       inputEmail: '',
       uploadImage: false,
-      isUploadLoading: false
+      isUploadLoading: false,
+      settingListItem: [{
+        name: 'Sign Out',
+        action: () => this.signOut(),
+        iconLeft: () => '',
+        iconRight: () => <Icon name="sign-out-alt" size={14} />
+      }]
     };
 
     AsyncStorage.getItem('signInData', (e, result) => {
@@ -110,7 +116,7 @@ class Settings extends Component {
             Toast.show({
               text: this.props.localProfile.profile.message,
               textStyle: { fontSize: 12, fontWeight: 'bold' },
-              duration: 2000,
+              duration: 500,
               style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
             });
           }
@@ -123,7 +129,7 @@ class Settings extends Component {
         Toast.show({
           text: "Error: Can't Edit Profile",
           textStyle: { fontSize: 12, fontWeight: 'bold' },
-          duration: 2000,
+          duration: 500,
           style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
         });
       })
@@ -156,7 +162,7 @@ class Settings extends Component {
             Toast.show({
               text: this.props.localProfile.profile.message,
               textStyle: { fontSize: 12, fontWeight: 'bold' },
-              duration: 2000,
+              duration: 500,
               style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
             });
           }
@@ -175,7 +181,7 @@ class Settings extends Component {
         Toast.show({
           text: "Error: Can't load data, please check your internet connection and try again.",
           textStyle: { fontSize: 12, fontWeight: 'bold' },
-          duration: 2000,
+          duration: 500,
           style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
         });
       })
@@ -277,7 +283,19 @@ class Settings extends Component {
           </Layout>
 
           <Layout style={styles.profileItem}>
-            <Button onPress={() => this.signOut()}>Sign Out</Button>
+            <List
+              ListHeaderComponent={() => <Text style={{fontWeight: 'bold', color: '#fff'}}>General</Text>}
+              ListHeaderComponentStyle={{padding: 5, backgroundColor: '#444', borderTopLeftRadius: 5, borderTopRightRadius: 5}}
+              ListFooterComponent={() => <View></View>}
+              ListFooterComponentStyle={{backgroundColor: '#444', borderBottomRightRadius: 5, borderBottomLeftRadius: 5, padding: 12}}
+              style={styles.settingList}
+              data={this.state.settingListItem}
+              renderItem={({item}) =>
+              <ListItem style={styles.settingListItem} onPress={() => item.action()}>
+                <Text style={styles.settingListItemText}>{item.iconLeft()} {item.name} {item.iconRight()}</Text>
+              </ListItem>
+              }>
+            </List>
           </Layout>
         </ScrollView>
       </Layout>

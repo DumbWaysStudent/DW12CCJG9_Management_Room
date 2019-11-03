@@ -147,7 +147,7 @@ class Room extends Component {
         searchStatus: false
       })
     }
-    const newData = this.props.localRooms.rooms.filter(item => {
+    const newData = this.props.localRooms.rooms.result.filter(item => {
       const itemData = `${item.name.toUpperCase()}`;
       const textData = text.toUpperCase();
 

@@ -3,7 +3,7 @@ const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const fs = require('fs');
 const models = require('../models');
-const Logs = models.log;
+const History = models.history;
 
 const checkDBConn = (req, res) => {
     let sequelize;
@@ -30,26 +30,26 @@ const checkDBConn = (req, res) => {
 }
 
 // ------------ EXPERIMENTAL ----------- //
-const createLogs = (data) => {
-    Logs
-    .create(data)
-    .then(result => {
-        return result;
-    })
+const createHistory = (data) => {
+    // History
+    // .create(data)
+    // .then(result => {
+    //     return result;
+    // })
 }
 
-const getLogs = () => {
-    Logs
-    .findAll()
-    .then(result => {
-        return result;
-    })
+const getHistories = () => {
+    // History
+    // .findAll()
+    // .then(result => {
+    //     return result;
+    // })
 }
 
 // ------------------------------------- //
 
 module.exports =  {
     checkDBConn,
-    createLogs,
-    getLogs
+    createHistory,
+    getHistories
 }

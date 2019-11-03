@@ -54,20 +54,10 @@ class CheckIn extends Component {
           this.loadData(result.token);
 
         } else {
-          Toast.show({
-            text: "Error: Can't load data.",
-            textStyle: { fontSize: 12, fontWeight: 'bold' },
-            duration: 2000,
-            style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-          });
+          this.toastGenerator('error', "Error: Can't load data.")
         }
       } else {
-        Toast.show({
-          text: "Error: Can't load data.",
-          textStyle: { fontSize: 12, fontWeight: 'bold' },
-          duration: 2000,
-          style: { backgroundColor: '#ff3333', marginHorizontal: 5, marginBottom: 70, borderRadius: 5 }
-        });
+        this.toastGenerator('error', "Error: Can't load data.")
       }
     });
   }
@@ -166,7 +156,27 @@ class CheckIn extends Component {
   checkOut = () => {
     if (this.state.roomID != null && this.state.signInData != null) {
       this.setState({ addCheckInDisplay: false })
+
+      // let data = this.props.localOrders.orders.result[this.props.localOrders.orders.result.findIndex(x => x.room_id == this.state.roomID)];
+      // data.duration = moment(new Date(data.order_end_time)).diff(moment(), 'minute');
+      // data.is_done = true;
+      // data.created_by = this.state.signInData.id;
+      // console.log(data)
+
+      let data = {
+        room_name: this.getKeyValue(this.props.localRooms.rooms.result, 'id', this.state.roomID, 'name'),
+        customer_name: this.getKeyValue(this.props.localCustomers.customers.result, 'id', this.state.customerPicker, 'name'),
+        identity_number: this.getKeyValue(this.props.localCustomers.customers.result, 'id', this.state.customerPicker, 'identity_number'),
+        phone_number: this.getKeyValue(this.props.localCustomers.customers.result, 'id', this.state.customerPicker, 'phone_number'),
+        duration: this.getKeyValue(this.props.localOrders.orders.result, 'room_id', this.state.roomID, 'duration'),
+        order_end_time: this.getKeyValue(this.props.localOrders.orders.result, 'room_id', this.state.roomID, 'order_end_time'),
+        is_done: true
+      }
+
+      console.log(data)
+      
       this.props.handleCheckOut({
+        data,
         room_id: this.state.roomID,
         token: this.state.signInData.token
       })
@@ -175,11 +185,26 @@ class CheckIn extends Component {
             this.toastGenerator('error', "Error: Can't Checkout")
           } else {
             this.setState({
-              interval: setInterval(this.setCheckOutTimer, 3000)
+              interval: setInterval(this.setCheckOutTimer, 5000)
             })
             this.toastGenerator('success', "Checkout Success");
           }
         })
+    }
+  }
+
+  /**
+   * Get key value from array of object
+   */
+  getKeyValue = (obj, keyToCompare, dataToCompare, keyToGet) => {
+    if (obj != undefined && obj != false) {
+      if (obj.findIndex(x => x[keyToCompare] == dataToCompare) !== -1) {
+        return obj[obj.findIndex(x => x[keyToCompare] == dataToCompare)][keyToGet];
+      } else {
+        return null;
+      }
+    } else {
+      return null;
     }
   }
 
@@ -235,7 +260,7 @@ class CheckIn extends Component {
                         if (customers.hasOwnProperty('status')) {
                           if (customers.status == 'success') {
                             this.setState({
-                              interval: setInterval(this.setCheckOutTimer, 3000),
+                              interval: setInterval(this.setCheckOutTimer, 5000),
                               customerPicker: (this.props.localCustomers.customers.result != false) ? this.props.localCustomers.customers.result[0].id : null
                             })
                           } else if (customers.status == 'error') {
@@ -278,7 +303,7 @@ class CheckIn extends Component {
     Toast.show({
       text: message,
       textStyle: { fontSize: 12, fontWeight: 'bold' },
-      duration: 2000,
+      duration: 500,
       style: (type == 'error') ? [styles.toastStyle, styles.errorToast] : [styles.toastStyle, styles.successToast]
     });
   }
@@ -293,7 +318,7 @@ class CheckIn extends Component {
         searchStatus: false
       })
     }
-    const newData = this.props.localRooms.rooms.filter(item => {
+    const newData = this.props.localRooms.rooms.result.filter(item => {
       const itemData = `${item.name.toUpperCase()}`
 
       const textData = text.toUpperCase()
@@ -443,7 +468,7 @@ class CheckIn extends Component {
                   if (this.state.bookedStatus) {
                     this.setState({
                       addCheckInDisplay: false,
-                      interval: setInterval(this.setCheckOutTimer, 3000)
+                      interval: setInterval(this.setCheckOutTimer, 5000)
                     })
                   } else {
                     this.setState({
@@ -470,9 +495,9 @@ class CheckIn extends Component {
                   inputRoomName: item.name,
                   inputDuration: '',
                   roomID: item.id,
-                  customerPicker: (this.findSpecificKey(this.props.localOrders.orders, item.id, 'customer_id') !== null) ? this.findSpecificKey(this.props.localOrders.orders, item.id, 'customer_id') : this.state.customerPicker,
+                  customerPicker: (this.getKeyValue(this.props.localOrders.orders.result, 'room_id', item.id, 'customer_id') !== null) ? this.getKeyValue(this.props.localOrders.orders.result, 'id', item.id, 'customer_id') : this.state.customerPicker,
                   durationLeft: this.durationLeftSetter(this.props.localOrders.orders, item),
-                  bookedStatus: (this.findSpecificKey(this.props.localOrders.orders, item.id, 'is_booked')) ? this.findSpecificKey(this.props.localOrders.orders, item.id, 'is_booked') : false
+                  bookedStatus: (this.getKeyValue(this.props.localOrders.orders.result, 'room_id', item.id,  'is_booked')) ? this.getKeyValue(this.props.localOrders.orders.result, 'room_id', item.id,  'is_booked') : false
                 }, true)}>{this.orderStatus(item.id)}</Text>
             </View>
           }

@@ -1,6 +1,7 @@
 const models = require('../models');
 const moment = require('moment');
 const Order = models.order;
+const HistoryController = require('./history');
 
 exports.showCheckIn = (req, res) => {
     Order.findAll()
@@ -51,6 +52,7 @@ exports.deleteOrder = (req, res) => {
     Order
         .destroy({ where: { room_id: req.params.room_id } })
         .then(() => {
+            HistoryController.createHistory(req.body);
             res.send({
                 status: 'success',
                 room_id: req.params.room_id

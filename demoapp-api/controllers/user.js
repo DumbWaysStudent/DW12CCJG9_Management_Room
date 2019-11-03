@@ -80,11 +80,26 @@ exports.register = (req, res) => {
                     });
                 })
                 .catch(err => {
-                    res.send({
-                        status: 'error',
-                        message: "Can't sign up",
-                        err
-                    })
+                    if (err.errors[0] != false) {
+                        if (err.errors[0].validatorKey == 'not_unique') {
+                            res.send({
+                                status: 'error',
+                                message: `${err.errors[0].path} ${err.errors[0].value} is already used`
+                            })
+                        } else {
+                            res.send({
+                                status: 'error',
+                                message: "Can't sign up",
+                                err
+                            })
+                        }
+                    } else {
+                        res.send({
+                            status: 'error',
+                            message: "Can't sign up",
+                            err
+                        })
+                    }
                 })
         }
     })

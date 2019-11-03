@@ -35,7 +35,7 @@ class SignIn extends Component {
                 this.setState({ isLoading: false});
                 Toast.show({
                     text: result.data.message,
-                    duration: 1000,
+                    duration: 500,
                     style: styles.signIntoastError
                 });
             } else {
@@ -49,7 +49,7 @@ class SignIn extends Component {
                   this.setState({ isLoading: false});
                   Toast.show({
                     text: 'Error: cannot sign in',
-                    duration: 1000,
+                    duration: 500,
                     style: styles.signIntoastError
                 });
               })
@@ -59,7 +59,7 @@ class SignIn extends Component {
             this.setState({ isLoading: false});
             Toast.show({
                 text: 'Error: cannot sign in',
-                duration: 1000,
+                duration: 500,
                 style: styles.signIntoastError
             });
         }) 
@@ -68,7 +68,7 @@ class SignIn extends Component {
             Toast.show({
                 text: verify.message,
                 textStyle: { fontSize: 12, fontWeight: 'bold' },
-                duration: 1000,
+                duration: 500,
                 style: styles.signIntoastError
             });
       }

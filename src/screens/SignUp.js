@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { AsyncStorage, Modal, View } from 'react-native';
+import { AsyncStorage, Modal, View, BackHandler } from 'react-native';
 import { Text, Input, Layout, Button, Spinner } from 'react-native-ui-kitten';
+import { Toast } from 'native-base';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Axios from 'axios';
 import { API_URL } from './../api_url';
@@ -18,6 +19,19 @@ class SignUp extends Component {
       secureTextEntry: true,
       isLoading: false
     };
+  }
+
+  componentDidMount() {
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
+  }
+
+  componentWillUnmount() {
+    this.backHandler.remove();
+  }
+
+  handleBackPress = () => {
+    this.props.navigation.goBack();
+    return true;
   }
 
   handleSignIn = () => {
@@ -45,7 +59,7 @@ class SignUp extends Component {
             this.setState({ isLoading: false });
             Toast.show({
               text: result.data.message,
-              duration: 1000,
+              duration: 500,
               style: styles.signIntoastError
             });
           } else {
@@ -59,7 +73,7 @@ class SignUp extends Component {
                 this.setState({ isLoading: false });
                 Toast.show({
                   text: 'Error: cannot sign up',
-                  duration: 1000,
+                  duration: 500,
                   style: styles.signIntoastError
                 });
               })
@@ -70,7 +84,7 @@ class SignUp extends Component {
           console.log(e);
           Toast.show({
             text: 'Error: cannot sign up',
-            duration: 1000,
+            duration: 500,
             style: styles.signIntoastError
           });
         })
@@ -78,7 +92,7 @@ class SignUp extends Component {
       this.setState({ isLoading: false });
       Toast.show({
         text: verify.message,
-        duration: 1000,
+        duration: 500,
         style: styles.signIntoastError
       });
     }

@@ -18,6 +18,7 @@ const UserController = require('./controllers/user');
 const RoomController = require('./controllers/room');
 const CustomerController = require('./controllers/customer');
 const OrderController = require('./controllers/order');
+const HistoryController = require('./controllers/history');
 
 //------- Middleware -------//
 const {authenticated} = require('./middleware');
@@ -52,6 +53,9 @@ app.group('/api/v2/', (router) => {
     router.get('/checkin', authenticated, OrderController.showCheckIn);
     router.post('/checkin', authenticated, OrderController.addCheckin);
     router.delete('/checkout/:room_id', authenticated, OrderController.deleteOrder);
+
+    // ---------- Histories --------//
+    router.get('/histories', authenticated, HistoryController.getHistory);
 
 });
 

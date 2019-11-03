@@ -192,7 +192,7 @@ class Customer extends Component {
     Toast.show({
       text: message,
       textStyle: { fontSize: 12, fontWeight: 'bold' },
-      duration: 2000,
+      duration: 500,
       style: (type == 'error') ? [styles.toastStyle, styles.errorToast] : [styles.toastStyle, styles.successToast]
     });
   }
@@ -208,7 +208,7 @@ class Customer extends Component {
         searchStatus: false
       })
     }
-    const newData = this.props.localCustomers.customers.filter(item => {
+    const newData = this.props.localCustomers.customers.result.filter(item => {
       const itemData = `${item.name.toUpperCase()}`
 
       const textData = text.toUpperCase();

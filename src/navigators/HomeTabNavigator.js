@@ -6,7 +6,8 @@ import { createBottomTabNavigator } from 'react-navigation-tabs';
 import CheckIn from '../screens/CheckIn';
 import Room from '../screens/Room';
 import Customer from '../screens/Customer';
-import Settings  from '../screens/Settings';
+import Histories from './../screens/Histories';
+import Settings from '../screens/Settings';
 
 
 const HomeTabNavigator = createBottomTabNavigator({
@@ -35,6 +36,15 @@ const HomeTabNavigator = createBottomTabNavigator({
             tabBarLabel: "Customer",
             tabBarIcon: ({ tintColor }) => (
                 <FontAwesome name="user-circle" size={18} color={tintColor} />)
+        })
+    },
+    Histories: {
+        screen: Histories,
+        navigationOptions: () => ({
+            header: null,
+            tabBarLabel: "Histories",
+            tabBarIcon: ({ tintColor }) => (
+                <FontAwesome name="history" size={18} color={tintColor} />)
         })
     },
     Settings: {
