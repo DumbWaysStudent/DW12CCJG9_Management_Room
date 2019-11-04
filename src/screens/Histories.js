@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, FlatList, AsyncStorage, RefreshControl } from 'react-native';
-import { Layout, Input } from 'react-native-ui-kitten';
+import { View, FlatList, AsyncStorage, RefreshControl } from 'react-native';
+import { Layout, Text, Input, List, ListItem } from 'react-native-ui-kitten';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { Card } from 'native-base';
 import { connect } from 'react-redux';
@@ -83,7 +83,7 @@ class Histories extends Component {
 
   render() {
     return (
-      <View>
+      <Layout style={[styles.container, styles.containerHome]}>
         <Layout style={styles.searchBar}>
           <Input
             onChangeText={text => this.searchFilter(text)}
@@ -98,20 +98,38 @@ class Histories extends Component {
           data={(this.state.searchStatus) ? this.state.searchFilterData : this.props.localHistories.histories.result}
           renderItem={({ item, index }) =>
             <Card style={(index == this.props.localHistories.histories.result.length - 1) ? [styles.historyCard, styles.historyCardLast] : styles.historyCard}>
-              <Text style={styles.historyCardText}>Order ID: <Text style={{ fontWeight: 'normal' }}>{item.id}</Text></Text>
-              <Text style={styles.historyCardText}>Room Name: <Text style={{ fontWeight: 'normal' }}>{item.room_name}</Text></Text>
-              <Text style={styles.historyCardText}>Customer Name: <Text style={{ fontWeight: 'normal' }}>{item.customer_name}</Text></Text>
-              <Text style={styles.historyCardText}>Identity Number: <Text style={{ fontWeight: 'normal' }}>{item.identity_number}</Text></Text>
-              <Text style={styles.historyCardText}>Phone Number: <Text style={{ fontWeight: 'normal' }}>{item.phone_number}</Text></Text>
-              <Text style={styles.historyCardText}>Duration: <Text style={{ fontWeight: 'normal' }}>{item.duration} minute</Text></Text>
-              <Text style={styles.historyCardText}>Check In  : <Text style={{ fontWeight: 'normal' }}>{this.checkInConvertDate(item.order_end_time, item.duration)}</Text></Text>
-              <Text style={styles.historyCardText}>Check Out  : <Text style={{ fontWeight: 'normal' }}>{this.checkOutConvertDate(item.createdAt)}</Text></Text>
-              <Text style={styles.historyCardText}>Order End Time: <Text style={{ fontWeight: 'normal' }}>{this.orderEndTimeConvertDate(item.order_end_time)}</Text></Text>
-              <Text style={styles.historyCardText}>Status: <Text style={{ fontWeight: 'normal' }}>{item.is_done ? 'Done' : 'Not Done'}</Text></Text>
+              <Text style={styles.historyCardText}>Order ID: <Text style={{ fontWeight: 'normal', color: '#fff' }}>{item.id}</Text></Text>
+              <Text style={styles.historyCardText}>Room Name: <Text style={{ fontWeight: 'normal', color: '#fff' }}>{item.room_name}</Text></Text>
+              <Text style={styles.historyCardText}>Customer Name: <Text style={{ fontWeight: 'normal', color: '#fff' }}>{item.customer_name}</Text></Text>
+              <Text style={styles.historyCardText}>Identity Number: <Text style={{ fontWeight: 'normal', color: '#fff' }}>{item.identity_number}</Text></Text>
+              <Text style={styles.historyCardText}>Phone Number: <Text style={{ fontWeight: 'normal', color: '#fff' }}>{item.phone_number}</Text></Text>
+              <Text style={styles.historyCardText}>Duration: <Text style={{ fontWeight: 'normal', color: '#fff' }}>{item.duration} minute</Text></Text>
+              <Text style={styles.historyCardText}>Check In  : <Text style={{ fontWeight: 'normal', color: '#fff' }}>{this.checkInConvertDate(item.order_end_time, item.duration)}</Text></Text>
+              <Text style={styles.historyCardText}>Check Out  : <Text style={{ fontWeight: 'normal', color: '#fff' }}>{this.checkOutConvertDate(item.createdAt)}</Text></Text>
+              <Text style={styles.historyCardText}>Order End Time: <Text style={{ fontWeight: 'normal', color: '#fff' }}>{this.orderEndTimeConvertDate(item.order_end_time)}</Text></Text>
+              <Text style={styles.historyCardText}>Status: <Text style={{ fontWeight: 'normal', color: '#fff' }}>{item.is_done ? 'Done' : 'Not Done'}</Text></Text>
             </Card>
           }
         />
-      </View>
+
+        {/* <List
+          style={styles.historyContainer}
+          data={(this.state.searchStatus) ? this.state.searchFilterData : this.props.localHistories.histories.result}
+          renderItem={({ item, index }) =>
+            <Layout style={{ marginTop: 10 }} level="2">
+              <Text style={{textAlign: 'center'}} category="s2">{moment(item.createdAT).toDate().toDateString()}</Text>
+              <Layout style={(index == this.props.localHistories.histories.result.length - 1) ? [styles.historyCardLast, {borderTopWidth: 1, borderTopColor: '#eee', borderBottomWidth: 1, borderBottomColor: '#eee'}] : {borderTopWidth: 1, borderTopColor: '#eee', borderBottomWidth: 1, borderBottomColor: '#eee'}}>
+                <ListItem>
+                  <Text style={[styles.historyCardText]}>Room Name: <Text style={{ fontWeight: 'normal' }}>{item.room_name}</Text></Text>
+                </ListItem>
+                <ListItem style={styles.settingListItem}>
+                  <Text style={styles.historyCardText}>Customer Name: <Text style={{ fontWeight: 'normal' }}>{item.customer_name}</Text></Text>
+                </ListItem>
+              </Layout>
+            </Layout>
+          }>
+        </List> */}
+      </Layout>
     );
   }
 }

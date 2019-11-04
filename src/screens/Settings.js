@@ -284,10 +284,6 @@ class Settings extends Component {
 
           <Layout style={styles.profileItem}>
             <List
-              ListHeaderComponent={() => <Text style={{fontWeight: 'bold', color: '#fff'}}>General</Text>}
-              ListHeaderComponentStyle={{padding: 5, backgroundColor: '#444', borderTopLeftRadius: 5, borderTopRightRadius: 5}}
-              ListFooterComponent={() => <View></View>}
-              ListFooterComponentStyle={{backgroundColor: '#444', borderBottomRightRadius: 5, borderBottomLeftRadius: 5, padding: 12}}
               style={styles.settingList}
               data={this.state.settingListItem}
               renderItem={({item}) =>

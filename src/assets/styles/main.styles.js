@@ -286,6 +286,7 @@ export default StyleSheet.create({
         borderRadius: 5
     },
     settingListItem: {
+        borderRadius: 5,
         borderBottomWidth: 1,
         borderColor: '#eee'
     },
@@ -304,13 +305,15 @@ export default StyleSheet.create({
     },
     historyCard: {
         position: 'relative',
+        backgroundColor: '#444',
         padding: 10,
         borderRadius: 10
     },
     historyCardLast: {
-        marginBottom: 100
+        marginBottom: 30
     },
     historyCardText: {
+        color: '#fff',
         fontWeight: 'bold'
     }
 });
