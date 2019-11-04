@@ -29,6 +29,20 @@ export default function reducerHistory(state = initialState, action) {
                 isLoading: false,
                 isError: true
             }
+        case types.ADD_HISTORY:
+                if (action.payload != false) {
+                    if (state.histories == false) {
+                        state.histories = {result: [action.payload]}
+                    } else {
+                        state.histories.result.push(action.payload)
+                    }
+                }
+                
+                return {
+                    ...state,
+                    isLoading: false,
+                    isSuccess: true
+                }
         default:
             return state;
             break;

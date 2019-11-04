@@ -4,7 +4,8 @@ const initialState = {
     isLoading: false,
     isError: false,
     isSuccess: false,
-    orders: []
+    orders: [],
+    histories: []
 };
 
 function compare(a, b) {
@@ -77,7 +78,8 @@ export default function reducerOrder(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 isSuccess: true,
-                orders: {result: newData.sort(compare)}
+                orders: {result: newData.sort(compare)},
+                histories: action.payload.data.histories
             }
         case `${types.CHECK_OUT}_REJECTED`:
             return {

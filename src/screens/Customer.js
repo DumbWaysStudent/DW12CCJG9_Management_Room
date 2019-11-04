@@ -58,7 +58,7 @@ class Customer extends Component {
       }
     }
     ImagePicker.showImagePicker(options, (response) => {
-      // console.log('Response =', response);
+      console.log('Response =', response);
 
       if (response.didCancel) {
         console.log('User Cancelled image picker')
@@ -292,7 +292,7 @@ class Customer extends Component {
                 />
 
                 <View style={{ margin: 8, flexDirection: 'row' }}>
-                  <Avatar style={styles.customerListAvatar} source={(this.state.inputAvatar != null) ? { uri: this.state.inputAvatar.uri } : this.state.avatar} />
+                  <Avatar style={styles.customerListAvatar} source={(this.state.inputAvatar !== null && this.state.inputAvatar.hasOwnProperty('uri')) ? { uri: this.state.inputAvatar.uri } : this.state.avatar } />
                   <Icon name="camera" size={20} onPress={() => this.imagePickerHandler()} />
                 </View>
               </ScrollView>
@@ -360,7 +360,7 @@ class Customer extends Component {
                 />
 
                 <View style={{ margin: 8, flexDirection: 'row' }}>
-                  <Avatar style={styles.customerListAvatar} source={(this.state.inputAvatar !== null && this.state.inputAvatar.hasOwnProperty('uri') == true) ? { uri: this.state.inputAvatar.uri } : { uri: `http://192.168.0.35:5000/${this.state.inputAvatar}` }} />
+                  <Avatar style={styles.customerListAvatar} source={(this.state.inputAvatar !== null && this.state.inputAvatar.hasOwnProperty('uri') == true) ? { uri: this.state.inputAvatar.uri } : { uri: `https://leaf-hotel.herokuapp.com/ ${this.state.inputAvatar}` }} />
                   <Icon name="camera" size={20} onPress={() => this.imagePickerHandler()} />
                 </View>
               </ScrollView>
@@ -394,7 +394,7 @@ class Customer extends Component {
               })}
               style={[styles.customerCard]}>
               {/* <Icon name="user-circle" size={50} style={{ marginVertical: 10, marginRight: 10 }} /> */}
-              <Avatar style={styles.customerListAvatar} source={{ uri: `http://192.168.0.35:5000/${item.image}` }} />
+              <Avatar style={styles.customerListAvatar} source={{ uri: `https://leaf-hotel.herokuapp.com/${item.image}` }} />
               <View style={styles.customerListInfo}>
                 <Text style={{ fontWeight: 'bold' }}>{item.name}</Text>
                 <Text>{item.identity_number}</Text>
@@ -411,7 +411,7 @@ class Customer extends Component {
             inputCustomerName: '',
             inputIdNum: '',
             inputPhoneNum: '',
-            inputAvatar: this.state.avatar
+            inputAvatar: null
           })}>
           <Icon name="plus" style={{ color: "#284de0" }} />
         </Fab>

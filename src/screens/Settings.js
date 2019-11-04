@@ -167,8 +167,9 @@ class Settings extends Component {
             });
           }
         } else {
+          console.log(`https://leaf-hotel.herokuapp.com/${this.props.localProfile.profile.avatar}`)
           this.setState({
-            avatar: this.props.localProfile.profile.avatar,
+            avatar: `https://leaf-hotel.herokuapp.com/${this.props.localProfile.profile.avatar}`,
             name: this.props.localProfile.profile.name,
             email: this.props.localProfile.profile.email,
             inputName: this.props.localProfile.profile.name,
@@ -245,7 +246,7 @@ class Settings extends Component {
               onPress={() => {
                 this.exitEditModal()
               }} />
-            <Avatar style={styles.customerEditAvatar} source={(this.state.avatar != 'default-pic' || this.state.avatar != null) ? { uri: (this.state.uploadImage) ? this.state.imagePic.uri : `http://192.168.0.35:5000/${this.state.avatar}` } : (this.state.imagePic != null) ? { uri: this.state.imagePic.uri } : require('./../assets/images/profile-picture-default.png')} />
+            <Avatar style={styles.customerEditAvatar} source={(this.state.avatar != '' && this.state.avatar != 'default-pic') ? ((this.state.uploadImage) ? {uri: this.state.imagePic.uri} : {uri: this.state.avatar}) : (this.state.uploadImage) ? {uri: this.state.imagePic.uri} : require('./../assets/images/profile-picture-default.png')} />
             <Icon
               style={styles.editProfileCamera} name="camera"
               onPress={() => this.imagePickerHandler()} />
@@ -274,7 +275,8 @@ class Settings extends Component {
         refreshing={this.props.localProfile.isLoading || this.state.isUploadLoading}
         refreshControl={<RefreshControl colors={['#284de0']} refreshing={this.props.localProfile.isLoading || this.state.isUploadLoading} onRefresh={() => this.loadData(this.state.signInData.token)} />}>
           <Layout level="1" style={{ flexDirection: 'row', padding: 10 }}>
-            <Avatar style={styles.customerListAvatar} source={(this.state.avatar != 'default-pic' || this.state.avatar != null) ? { uri: `http://192.168.0.35:5000/${this.state.avatar}` } : require('./../assets/images/profile-picture-default.png')} />
+            {console.log(this.state.avatar)}
+            <Avatar style={styles.customerListAvatar} source={(this.state.avatar != '' && this.state.avatar != 'default-pic') ? {uri: this.state.avatar} : require('./../assets/images/profile-picture-default.png')} />
             <Icon name="edit" size={20} style={{ position: 'absolute', right: 0, margin: 8 }} onPress={() => this.setState({ editProfileModal: true })} />
             <View style={styles.profileTextContainer}>
               <Text style={styles.profileEmail}>{this.state.email}</Text>

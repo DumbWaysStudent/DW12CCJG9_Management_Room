@@ -12,3 +12,8 @@ export const handleGetHistories = (params) => ({
         }
     })
 });
+
+export const handleAddHistory = (params) => ({
+    type: types.ADD_HISTORY,
+    payload: params
+})

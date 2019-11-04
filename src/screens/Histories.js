@@ -64,7 +64,7 @@ class Histories extends Component {
       })
     }
     const newData = this.props.localHistories.histories.result.filter(item => {
-      const itemData = `${item.room_name.toUpperCase()}`;
+      const itemData = `${item.customer_name.toUpperCase()}`;
       const textData = text.toUpperCase();
 
       return itemData.indexOf(textData) > -1;

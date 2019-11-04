@@ -29,4 +29,7 @@ export const CHECK_OUT = 'CHECK_OUT';
 // Type Settings
 export const GET_PROFILE = 'GET_PROFILE';
 export const UPDATE_PROFILE = 'UPDATE_PROFILE';
-export const GET_HISTORIES = 'GET_HISTORIES'
+
+// Type Histories
+export const GET_HISTORIES = 'GET_HISTORIES';
+export const ADD_HISTORY = 'ADD_HISTORY';

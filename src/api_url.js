@@ -1,1 +1,1 @@
-export const API_URL = 'https://leaf-hotel.herokuapp.com/api/v2/';
+export const API_URL = 'https://leaf-hotel.herokuapp.com/api/v2';

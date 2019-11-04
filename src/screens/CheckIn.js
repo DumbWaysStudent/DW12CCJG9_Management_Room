@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import * as actionOrder from './../redux/actions/actionOrder';
 import * as actionRoom from './../redux/actions/actionRoom';
 import * as actionCustomer from './../redux/actions/actionCustomer'
+import * as actionHistory from './../redux/actions/actionHistory';
 import Modal from 'react-native-modal';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { FlatGrid } from 'react-native-super-grid';
@@ -173,8 +174,6 @@ class CheckIn extends Component {
         is_done: true
       }
 
-      console.log(data)
-      
       this.props.handleCheckOut({
         data,
         room_id: this.state.roomID,
@@ -187,6 +186,7 @@ class CheckIn extends Component {
             this.setState({
               interval: setInterval(this.setCheckOutTimer, 5000)
             })
+            this.props.handleAddHistory(this.props.localOrders.histories)
             this.toastGenerator('success', "Checkout Success");
           }
         })
@@ -511,7 +511,8 @@ const mapStateToProps = state => {
   return {
     localOrders: state.orders,
     localRooms: state.rooms,
-    localCustomers: state.customers
+    localCustomers: state.customers,
+    localHistories: state.histories
   }
 }
 
@@ -526,7 +527,10 @@ const mapDispatchToProps = dispatch => {
     handleGetRooms: (params) => dispatch(actionRoom.handleGetRooms(params)),
 
     // ----------- Customers -------//
-    handleGetCustomers: (params) => dispatch(actionCustomer.handleGetCustomers(params))
+    handleGetCustomers: (params) => dispatch(actionCustomer.handleGetCustomers(params)),
+
+    // ----------- Histories -------//
+    handleAddHistory: (params) => dispatch(actionHistory.handleAddHistory(params))
   }
 }
 
