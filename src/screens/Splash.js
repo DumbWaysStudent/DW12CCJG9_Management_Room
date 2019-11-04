@@ -15,7 +15,7 @@ class Splash extends Component {
 
   verifyToken = () => {
     Axios
-    .get(`http://192.168.0.35:5000/api/v2/`)
+    .get(`https://leaf-hotel.herokuapp.com/api/v2/`)
     .then(result => {
       if (result.data.status == 'errorConn') {
         this.props.navigation.navigate('ErrorConnection');
