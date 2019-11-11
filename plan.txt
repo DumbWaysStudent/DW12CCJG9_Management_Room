@@ -7,4 +7,9 @@
 * Ubah UI Frontend > Home
 * Tambahkan Opsi Edit Profile pada halaman Settings
 * Add Duplicate Condition in Edit Room
+* Add Check Internet Connection Function
+* add new style for toast in front Screen
+* add dynamic grid changer
+* fix when delete customer, order is not deleted
+* add search filter by type
 * ---------------------------------------------------------------------------------- 
